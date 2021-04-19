@@ -1,0 +1,26 @@
+.ChartTitle {
+  display: inline-block;
+
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  
+  color:black;
+  background-color: white;
+  opacity: 0.75;
+
+  margin:0;
+  padding: 1.0em;
+}
+
+.ChartTitle h1{
+  margin:0;
+  padding: 0.1em;
+}
+
+.ChartTitle p{
+  margin:0;
+  padding: 0.1em;
+  padding-left: 1.0em;
+}

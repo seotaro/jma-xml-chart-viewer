@@ -1,11 +1,12 @@
 import './App.css';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import DeckGL from '@deck.gl/react';
 import { GeoJsonLayer, SolidPolygonLayer, LineLayer, TextLayer } from '@deck.gl/layers';
 import { _GlobeView as GlobeView } from '@deck.gl/core';
 import { latlonline, modifyChartGeojson, createChartTexts } from './utils'
 import { settings } from './settings'
+import ChartTitle from './components/ChartTitle'
 
 
 
@@ -18,7 +19,8 @@ const INITIAL_VIEW_STATE = {
 
 const MAP_URL = 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_land.geojson';
 
-const LATEST_URL = 'https://jma-xml-api-mrfbzypr4q-an.a.run.app/VZSA60/latest.json';
+const chartType = 'VZSA60';
+const LATEST_URL = `https://jma-xml-api-mrfbzypr4q-an.a.run.app/${chartType}/latest.json`;
 
 function App() {
   const [chart, setChart] = useState(null);
@@ -46,7 +48,8 @@ function App() {
           // レンダリングに必要な情報を補足する。
           geojson = modifyChartGeojson(geojson);
           const texts = createChartTexts(geojson);
-          return { geojson: geojson, texts: texts };
+          const title = { ...geojson.properties, type: chartType };
+          return { geojson: geojson, texts: texts, title: title };
         })
         .catch((err) => {
           console.error(`${err}`);
@@ -99,51 +102,56 @@ function App() {
     />
   );
 
+  const chartTitle = chart && (<ChartTitle title={chart.title} />);
+
   return (
-    <DeckGL
-      initialViewState={INITIAL_VIEW_STATE}
-      controller={true}
-    >
+    <Fragment>
+      {chartTitle}
+      <DeckGL
+        initialViewState={INITIAL_VIEW_STATE}
+        controller={true}
+      >
 
-      {chartLayers}
-      {chartTextLayers}
+        {chartLayers}
+        {chartTextLayers}
 
-      < LineLayer id='latlon-line-layer'
-        data={latlonline}
+        < LineLayer id='latlon-line-layer'
+          data={latlonline}
 
-        getSourcePosition={d => d.start}
-        getTargetPosition={d => d.end}
+          getSourcePosition={d => d.start}
+          getTargetPosition={d => d.end}
 
-        getColor={[127, 127, 127]}
-        getWidth={1}
+          getColor={[127, 127, 127]}
+          getWidth={1}
 
-        getPolygonOffset={({ layerIndex }) => [0, -10000]}
-      />
+          getPolygonOffset={({ layerIndex }) => [0, -10000]}
+        />
 
-      <GeoJsonLayer id="map-layer"
-        data={MAP_URL}
+        <GeoJsonLayer id="map-layer"
+          data={MAP_URL}
 
-        filled={true}
+          filled={true}
 
-        getFillColor={[64, 64, 64]}
+          getFillColor={[64, 64, 64]}
 
-        parameters={{ depthTest: true, cull: true }}
-        getPolygonOffset={({ layerIndex }) => [0, -10000]}
-      />
+          parameters={{ depthTest: true, cull: true }}
+          getPolygonOffset={({ layerIndex }) => [0, -10000]}
+        />
 
-      <SolidPolygonLayer id='background'
-        data={[[[-180, 90], [0, 90], [180, 90], [180, -90], [0, -90], [-180, -90]]]}
-        getPolygon={d => d}
+        <SolidPolygonLayer id='background'
+          data={[[[-180, 90], [0, 90], [180, 90], [180, -90], [0, -90], [-180, -90]]]}
+          getPolygon={d => d}
 
-        filled={true}
-        getFillColor={[32, 32, 32]}
+          filled={true}
+          getFillColor={[32, 32, 32]}
 
-        parameters={{ depthTest: true, cull: true }}
-        getPolygonOffset={({ layerIndex }) => [0, 10000]}
-      />
+          parameters={{ depthTest: true, cull: true }}
+          getPolygonOffset={({ layerIndex }) => [0, 10000]}
+        />
 
-      <GlobeView id="map" width="100%" controller={true} />
-    </DeckGL>
+        <GlobeView id="map" width="100%" controller={true} />
+      </DeckGL>
+    </Fragment>
   );
 }
 
