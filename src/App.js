@@ -18,30 +18,38 @@ const INITIAL_VIEW_STATE = {
 
 const MAP = 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_land.geojson';
 
-const chartGeoJson = 'https://xml2chart-api-mrfbzypr4q-an.a.run.app/?url=https://storage.googleapis.com/jma-xml-files/20210416142531_0_VZSA60_010000.xml';
-
-
+const LATEST_URL = 'https://jma-xml-api-mrfbzypr4q-an.a.run.app/VZSA60/latest.json';
 
 function App() {
   const [chart, setChart] = useState(null);
 
   useEffect(() => {
     (async () => {
-      const chart = await fetch(chartGeoJson)
-        .then((res) => {
+
+      const chart = await fetch(LATEST_URL)
+        .then(res => {
           return res.text();
         })
-        .then((text) => {
+        .then(text => {
           return JSON.parse(text);
         })
-        .then((geojson) => {
+        .then(latest => {
+          return fetch(`https://xml2chart-api-mrfbzypr4q-an.a.run.app/?url=${latest[0].url}`)
+        })
+        .then(res => {
+          return res.text();
+        })
+        .then(text => {
+          return JSON.parse(text);
+        })
+        .then(geojson => {
           // レンダリングに必要な情報を補足する。
           geojson = modifyChartGeojson(geojson);
           const texts = createChartTexts(geojson);
           return { geojson: geojson, texts: texts };
         })
         .catch((err) => {
-          console.error(`load error ${chartGeoJson} : ${err}`);
+          console.error(`${err}`);
         });
 
       setChart(chart);
