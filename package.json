@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@deck.gl/core": "^8.4.13",
+    "@deck.gl/extensions": "^8.4.13",
+    "@deck.gl/layers": "^8.4.13",
+    "@deck.gl/mesh-layers": "^8.4.13",
+    "@deck.gl/react": "^8.4.13",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
