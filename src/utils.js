@@ -119,9 +119,7 @@ export function createChartTexts(chart) {
             case '高気圧':
             case '熱帯低気圧':
             case '低圧部':
-                const offset = [0.0, -4.0];
-                const coordinate = feature.geometry.coordinates.map((x, i) => (x + offset[i]));
-                texts.push({ title: title, type: feature.properties.type, coordinates: coordinate });
+                texts.push({ title: title, type: feature.properties.type, coordinates: feature.geometry.coordinates });
                 break;
         }
     }

@@ -84,7 +84,7 @@ function App() {
       getTextAnchor={'middle'}
       sizeScale={1}
       getColor={d => settings[d.type].color}
-
+      getPixelOffset={[20, 20]}
       getPolygonOffset={({ layerIndex }) => [0, -30000]}
     />
   );
