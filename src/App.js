@@ -7,6 +7,7 @@ import { _GlobeView as GlobeView } from '@deck.gl/core';
 import { latlonline, modifyChartGeojson, createChartTexts } from './utils'
 import { settings } from './settings'
 import ChartTitle from './components/ChartTitle'
+import ChartTypeSelector from './components/ChartTypeSelector'
 
 
 
@@ -19,14 +20,23 @@ const INITIAL_VIEW_STATE = {
 
 const MAP_URL = 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_land.geojson';
 
-const chartType = 'VZSA60';
-const LATEST_URL = `https://jma-xml-api-mrfbzypr4q-an.a.run.app/${chartType}/latest.json`;
+const chartTypes = {
+  'VZSA50': { name: '地上実況図', code: 'SPAS' },
+  'VZSA60': { name: 'アジア太平洋地上実況図', code: 'ASAS' },
+  'VZSF50': { name: '地上24時間予想図', code: 'FSAS24' },
+  'VZSF60': { name: 'アジア太平洋海上悪天24時間予想図', code: 'FSAS24' },
+  'VZSF51': { name: '地上48時間予想図', code: 'FSAS48' },
+  'VZSF61': { name: 'アジア太平洋海上悪天48時間予想図', code: 'FSAS48' },
+};
 
 function App() {
   const [chart, setChart] = useState(null);
+  const [chartType, setChartType] = useState(Object.keys(chartTypes)[0]);
 
   useEffect(() => {
     (async () => {
+
+      const LATEST_URL = `https://jma-xml-api-mrfbzypr4q-an.a.run.app/${chartType}/latest.json`;
 
       const chart = await fetch(LATEST_URL)
         .then(res => {
@@ -57,8 +67,7 @@ function App() {
 
       setChart(chart);
     })();
-  }, []);
-
+  }, [chartType]);
 
   const chartLayers = chart && (
     <GeoJsonLayer id={`chart-shape-layer`}
@@ -102,11 +111,16 @@ function App() {
     />
   );
 
+  const handleChangeChartType = async (type) => {
+    setChartType(type);
+  };
+
   const chartTitle = chart && (<ChartTitle title={chart.title} />);
 
   return (
     <Fragment>
       {chartTitle}
+      <ChartTypeSelector types={chartTypes} handleChangeType={handleChangeChartType} />
       <DeckGL
         initialViewState={INITIAL_VIEW_STATE}
         controller={true}
