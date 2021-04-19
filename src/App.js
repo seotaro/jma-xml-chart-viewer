@@ -16,7 +16,7 @@ const INITIAL_VIEW_STATE = {
   zoom: 1.2,
 };
 
-const MAP = 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_land.geojson';
+const MAP_URL = 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_land.geojson';
 
 const LATEST_URL = 'https://jma-xml-api-mrfbzypr4q-an.a.run.app/VZSA60/latest.json';
 
@@ -121,7 +121,7 @@ function App() {
       />
 
       <GeoJsonLayer id="map-layer"
-        data={MAP}
+        data={MAP_URL}
 
         filled={true}
 
