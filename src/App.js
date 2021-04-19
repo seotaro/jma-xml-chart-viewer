@@ -12,8 +12,8 @@ import { settings } from './settings'
 // Viewport settings
 const INITIAL_VIEW_STATE = {
   longitude: 140.0,
-  latitude: 35.0,
-  zoom: 1,
+  latitude: 40.0,
+  zoom: 1.2,
 };
 
 const MAP = 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_land.geojson';
@@ -72,6 +72,8 @@ function App() {
     />
   );
 
+
+  const characterSet = Object.keys(settings).map(k => settings[k]).filter(x => x.text).map(x => x.text);
   const chartTextLayers = chart && (
     <TextLayer id={`chart-text-layer`}
       data={chart.texts}
@@ -85,7 +87,7 @@ function App() {
       sizeScale={1}
       getColor={d => settings[d.type].color}
       getPixelOffset={[20, 20]}
-      getPolygonOffset={({ layerIndex }) => [0, -30000]}
+      getPolygonOffset={({ layerIndex }) => [0, -90000]}
     />
   );
 
