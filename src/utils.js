@@ -1,3 +1,5 @@
+import { settings } from './settings'
+
 // LineLayer の緯線経線データ
 export const latlonline = (() => {
     const d = 1;  // [°]。精度みたいなもの。
@@ -93,33 +95,13 @@ export function modifyChartGeojson(geojson) {
 export function createChartTexts(chart) {
     const texts = [];
     for (const feature of chart.features) {
-
-        let title = '';
-        switch (feature.properties.type) {
-            case '台風':
-                title = '台';
-                break;
-            case '低気圧':
-                title = '低';
-                break;
-            case '高気圧':
-                title = '高';
-                break;
-            case '熱帯低気圧':
-                title = '熱';
-                break;
-            case '低圧部':
-                title = '低';
-                break;
-        }
-
         switch (feature.properties.type) {
             case '台風':
             case '低気圧':
             case '高気圧':
             case '熱帯低気圧':
             case '低圧部':
-                texts.push({ title: title, type: feature.properties.type, coordinates: feature.geometry.coordinates });
+                texts.push({ title: settings[feature.properties.type].text, type: feature.properties.type, coordinates: feature.geometry.coordinates });
                 break;
         }
     }
