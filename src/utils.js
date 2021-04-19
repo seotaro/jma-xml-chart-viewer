@@ -80,6 +80,27 @@ export function modifyChartGeojson(geojson) {
                     deleteFeatures.push(feature);
                 }
                 break;
+
+            case '台風':
+            case '低気圧':
+            case '高気圧':
+            case '熱帯低気圧':
+            case '低圧部':
+                {
+                    // 元の中心座標から四方に伸ばした×マークを上書きする。
+                    const radius = 0.5;
+                    const center = feature.geometry.coordinates;
+
+                    const lines = [];
+                    lines.push([center, [center[0] + radius, center[1] + radius]]);
+                    lines.push([center, [center[0] - radius, center[1] + radius]]);
+                    lines.push([center, [center[0] + radius, center[1] - radius]]);
+                    lines.push([center, [center[0] - radius, center[1] - radius]]);
+
+                    feature.geometry.type = 'MultiLineString';
+                    feature.geometry.coordinates = lines;
+                }
+                break;
         }
     }
 
@@ -101,7 +122,13 @@ export function createChartTexts(chart) {
             case '高気圧':
             case '熱帯低気圧':
             case '低圧部':
-                texts.push({ title: settings[feature.properties.type].text, type: feature.properties.type, coordinates: feature.geometry.coordinates });
+                texts.push(
+                    {
+                        title: settings[feature.properties.type].text,
+                        type: feature.properties.type,
+                        coordinates: feature.geometry.coordinates[0],
+                        offset: [20, 20]
+                    });
                 break;
         }
     }
