@@ -2,6 +2,7 @@
   "name": "jma-xml-chart-viewer",
   "version": "0.1.0",
   "private": true,
+  "homepage": ".",
   "dependencies": {
     "@deck.gl/core": "^8.4.13",
     "@deck.gl/extensions": "^8.4.13",
