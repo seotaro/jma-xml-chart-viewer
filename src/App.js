@@ -90,7 +90,7 @@ function App() {
       getPosition={d => d.coordinates}
       getSize={32}
       getText={d => d.title}
-      characterSet={['台', '低', '高', '熱', '風']}
+      characterSet={characterSet}
       getTextAnchor={'middle'}
       sizeScale={1}
       getColor={d => settings[d.type].color}
