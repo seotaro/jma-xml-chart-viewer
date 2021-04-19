@@ -8,10 +8,7 @@ import Select from '@material-ui/core/Select';
 function ChartTypeSelector(props) {
   const [type, setType] = React.useState(Object.keys(props.types)[0]);
 
-  const items = [];
-  for (const key in props.types) {
-    items.push(<MenuItem value={key}>{key}</MenuItem>);
-  }
+  const items = Object.keys(props.types).map(key => <MenuItem value={key}>{key}</MenuItem>);
 
   const onChange = (e) => {
     setType(e.target.value);
