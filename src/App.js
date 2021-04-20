@@ -35,7 +35,6 @@ function App() {
 
   useEffect(() => {
     (async () => {
-
       const LATEST_URL = `https://jma-xml-api-mrfbzypr4q-an.a.run.app/${chartType}/latest.json`;
 
       const chart = await fetch(LATEST_URL)
@@ -73,7 +72,10 @@ function App() {
     })();
   }, [chartType]);
 
-  const geoJsonLayers = chart && ([
+
+  const chartTitle = chart && (<ChartTitle title={chart.title} />);
+
+  const chartGeoJsonLayers = chart && ([
     { id: `chart-isobar-layer`, data: chart.isobars },
     { id: `chart-front-layer`, data: chart.fronts },
     { id: `chart-ice-layer`, data: chart.ices },
@@ -120,12 +122,6 @@ function App() {
     />
   );
 
-  const handleChangeChartType = async (type) => {
-    setChartType(type);
-  };
-
-  const chartTitle = chart && (<ChartTitle title={chart.title} />);
-
   const centerMarks = chart && (< IconLayer id='chart-center-mark-layer'
     data={chart.centerMarks}
     sizeUnits={'pixels'}
@@ -163,7 +159,7 @@ function App() {
 
       <ChartTypeSelector
         types={chartTypes}
-        handleChangeType={handleChangeChartType} />
+        handleChangeType={(async (type) => { setChartType(type); })} />
 
       <DeckGL
         initialViewState={INITIAL_VIEW_STATE}
@@ -171,7 +167,7 @@ function App() {
       >
         {centerMarks}
         {windArrows}
-        {geoJsonLayers}
+        {chartGeoJsonLayers}
         {chartTextLayers}
 
         < LineLayer id='latlon-line-layer'
