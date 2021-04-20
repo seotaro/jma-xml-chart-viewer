@@ -92,48 +92,12 @@ export function modifyChartGeojson(geojson) {
     return geojson;
 }
 
-export function createChartTexts(chart) {
-    const texts = [];
-    for (const feature of chart.features) {
-        switch (feature.properties.type) {
-            case '台風':
-            case '低気圧':
-            case '高気圧':
-            case '熱帯低気圧':
-            case '低圧部':
-                texts.push({ ...feature });
-                break;
-        }
-    }
-    return texts;
+export function getWindArrows(geojson) {
+    const targets = ['悪天情報（強風）'];
+    return geojson.features.filter(x => targets.includes(x.properties.type));
 }
 
-export function createWindArrows(geojson) {
-    const winds = [];
-    for (const feature of geojson.features) {
-        switch (feature.properties.type) {
-            case '悪天情報（強風）':
-                winds.push({ ...feature })
-                break;
-        }
-    }
-
-    return winds;
-}
-
-export function createCenterMarks(geojson) {
-    const centers = [];
-    for (const feature of geojson.features) {
-        switch (feature.properties.type) {
-            case '台風':
-            case '低気圧':
-            case '高気圧':
-            case '熱帯低気圧':
-            case '低圧部':
-                centers.push({ ...feature })
-                break;
-        }
-    }
-
-    return centers;
+export function getCenterMarks(geojson) {
+    const targets = ['台風', '低気圧', '高気圧', '熱帯低気圧', '低圧部'];
+    return geojson.features.filter(x => targets.includes(x.properties.type));
 }

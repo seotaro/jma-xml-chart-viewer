@@ -4,7 +4,7 @@ import React, { useState, useEffect, Fragment } from 'react';
 import DeckGL from '@deck.gl/react';
 import { GeoJsonLayer, SolidPolygonLayer, LineLayer, TextLayer, IconLayer } from '@deck.gl/layers';
 import { _GlobeView as GlobeView } from '@deck.gl/core';
-import { latlonline, modifyChartGeojson, createChartTexts, createWindArrows, createCenterMarks } from './utils'
+import { latlonline, modifyChartGeojson, getWindArrows, getCenterMarks } from './utils'
 import { settings } from './settings'
 import ChartTitle from './components/ChartTitle'
 import ChartTypeSelector from './components/ChartTypeSelector'
@@ -57,11 +57,10 @@ function App() {
         .then(geojson => {
           // レンダリングに必要な情報を補足する。
           geojson = modifyChartGeojson(geojson);
-          const texts = createChartTexts(geojson);
           const title = { ...geojson.properties, type: chartType, code: chartTypes[chartType].code };
-          const windArrows = createWindArrows(geojson);
-          const centerMarks = createCenterMarks(geojson);
-          return { geojson: geojson, texts: texts, title: title, windArrows: windArrows, centerMarks: centerMarks };
+          const windArrows = getWindArrows(geojson);
+          const centerMarks = getCenterMarks(geojson);
+          return { geojson: geojson, title: title, windArrows: windArrows, centerMarks: centerMarks };
         })
         .catch((err) => {
           console.error(`${err}`);
@@ -98,7 +97,7 @@ function App() {
   const characterSet = Object.keys(settings).map(k => settings[k]).filter(x => x.text).map(x => x.text);
   const chartTextLayers = chart && (
     <TextLayer id={`chart-text-layer`}
-      data={chart.texts}
+      data={chart.centerMarks}
       getAlignmentBaseline={'center'}
       getAngle={0}
       getPosition={d => d.geometry.coordinates}
