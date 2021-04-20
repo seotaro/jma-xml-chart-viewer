@@ -4,7 +4,7 @@ import React, { useState, useEffect, Fragment } from 'react';
 import DeckGL from '@deck.gl/react';
 import { GeoJsonLayer, SolidPolygonLayer, LineLayer, TextLayer, IconLayer } from '@deck.gl/layers';
 import { _GlobeView as GlobeView } from '@deck.gl/core';
-import { latlonline, modifyChartGeojson, createChartTexts, createWindArrows } from './utils'
+import { latlonline, modifyChartGeojson, createChartTexts, createWindArrows, createCenterMarks } from './utils'
 import { settings } from './settings'
 import ChartTitle from './components/ChartTitle'
 import ChartTypeSelector from './components/ChartTypeSelector'
@@ -60,7 +60,8 @@ function App() {
           const texts = createChartTexts(geojson);
           const title = { ...geojson.properties, type: chartType, code: chartTypes[chartType].code };
           const windArrows = createWindArrows(geojson);
-          return { geojson: geojson, texts: texts, title: title, windArrows: windArrows };
+          const centerMarks = createCenterMarks(geojson);
+          return { geojson: geojson, texts: texts, title: title, windArrows: windArrows, centerMarks: centerMarks };
         })
         .catch((err) => {
           console.error(`${err}`);
@@ -118,7 +119,22 @@ function App() {
 
   const chartTitle = chart && (<ChartTitle title={chart.title} />);
 
-  const windArrows = chart && (< IconLayer id='chart-arrow-layer'
+  const centerMarks = chart && (< IconLayer id='chart-center-mark-layer'
+    data={chart.centerMarks}
+    sizeUnits={'pixels'}
+
+    iconAtlas={'chart-center-mark.png'}
+    iconMapping={'chart-center-mark.json'}
+    getIcon={d => 'center'}
+    getPosition={d => d.coordinates}
+    getSize={d => 20}
+    getColor={d => settings[d.type].color}
+    alphaCutoff={.5}
+    billboard={false}
+    getPolygonOffset={({ layerIndex }) => [0, -10000]}
+  />);
+
+  const windArrows = chart && (< IconLayer id='chart-wind-arrow-layer'
     data={chart.windArrows}
     sizeUnits={'pixels'}
 
@@ -141,6 +157,7 @@ function App() {
         initialViewState={INITIAL_VIEW_STATE}
         controller={true}
       >
+        {centerMarks}
         {windArrows}
         {chartLayers}
         {chartTextLayers}

@@ -80,27 +80,6 @@ export function modifyChartGeojson(geojson) {
                     deleteFeatures.push(feature);
                 }
                 break;
-
-            case '台風':
-            case '低気圧':
-            case '高気圧':
-            case '熱帯低気圧':
-            case '低圧部':
-                {
-                    // 元の中心座標から四方に伸ばした×マークを上書きする。
-                    const radius = 0.5;
-                    const center = feature.geometry.coordinates;
-
-                    const lines = [];
-                    lines.push([center, [center[0] + radius, center[1] + radius]]);
-                    lines.push([center, [center[0] - radius, center[1] + radius]]);
-                    lines.push([center, [center[0] + radius, center[1] - radius]]);
-                    lines.push([center, [center[0] - radius, center[1] - radius]]);
-
-                    feature.geometry.type = 'MultiLineString';
-                    feature.geometry.coordinates = lines;
-                }
-                break;
         }
     }
 
@@ -126,7 +105,7 @@ export function createChartTexts(chart) {
                     {
                         title: settings[feature.properties.type].text,
                         type: feature.properties.type,
-                        coordinates: feature.geometry.coordinates[0],
+                        coordinates: feature.geometry.coordinates,
                         offset: [20, 20]
                     });
                 break;
@@ -140,10 +119,10 @@ export function createWindArrows(geojson) {
     for (const feature of geojson.features) {
         switch (feature.properties.type) {
             case '悪天情報（強風）':
-                console.log(feature.geometry.coordinates, feature.properties.windDegree.value, feature.properties.windSpeedKnot.value);
-
                 winds.push({
                     coordinates: feature.geometry.coordinates,
+                    title: settings[feature.properties.type].text,
+                    type: feature.properties.type,
                     angle: feature.properties.windDegree.value,
                     speedKnot: feature.properties.windSpeedKnot.value
                 })
@@ -152,4 +131,25 @@ export function createWindArrows(geojson) {
     }
 
     return winds;
+}
+
+export function createCenterMarks(geojson) {
+    const centers = [];
+    for (const feature of geojson.features) {
+        switch (feature.properties.type) {
+            case '台風':
+            case '低気圧':
+            case '高気圧':
+            case '熱帯低気圧':
+            case '低圧部':
+                centers.push({
+                    title: settings[feature.properties.type].text,
+                    type: feature.properties.type,
+                    coordinates: feature.geometry.coordinates,
+                })
+                break;
+        }
+    }
+
+    return centers;
 }
