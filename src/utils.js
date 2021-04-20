@@ -101,13 +101,7 @@ export function createChartTexts(chart) {
             case '高気圧':
             case '熱帯低気圧':
             case '低圧部':
-                texts.push(
-                    {
-                        title: settings[feature.properties.type].text,
-                        type: feature.properties.type,
-                        coordinates: feature.geometry.coordinates,
-                        offset: [20, 20]
-                    });
+                texts.push({ ...feature });
                 break;
         }
     }
@@ -119,13 +113,7 @@ export function createWindArrows(geojson) {
     for (const feature of geojson.features) {
         switch (feature.properties.type) {
             case '悪天情報（強風）':
-                winds.push({
-                    coordinates: feature.geometry.coordinates,
-                    title: settings[feature.properties.type].text,
-                    type: feature.properties.type,
-                    angle: feature.properties.windDegree.value,
-                    speedKnot: feature.properties.windSpeedKnot.value
-                })
+                winds.push({ ...feature })
                 break;
         }
     }
@@ -142,11 +130,7 @@ export function createCenterMarks(geojson) {
             case '高気圧':
             case '熱帯低気圧':
             case '低圧部':
-                centers.push({
-                    title: settings[feature.properties.type].text,
-                    type: feature.properties.type,
-                    coordinates: feature.geometry.coordinates,
-                })
+                centers.push({ ...feature })
                 break;
         }
     }

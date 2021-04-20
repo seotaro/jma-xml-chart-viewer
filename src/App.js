@@ -101,13 +101,13 @@ function App() {
       data={chart.texts}
       getAlignmentBaseline={'center'}
       getAngle={0}
-      getPosition={d => d.coordinates}
+      getPosition={d => d.geometry.coordinates}
       getSize={32}
-      getText={d => d.title}
+      getText={d => settings[d.properties.type].text}
       characterSet={characterSet}
       getTextAnchor={'middle'}
       sizeScale={1}
-      getColor={d => settings[d.type].color}
+      getColor={d => settings[d.properties.type].color}
       getPixelOffset={[20, 20]}
       getPolygonOffset={({ layerIndex }) => [0, -90000]}
     />
@@ -126,9 +126,9 @@ function App() {
     iconAtlas={'chart-center-mark.png'}
     iconMapping={'chart-center-mark.json'}
     getIcon={d => 'center'}
-    getPosition={d => d.coordinates}
+    getPosition={d => d.geometry.coordinates}
     getSize={d => 20}
-    getColor={d => settings[d.type].color}
+    getColor={d => settings[d.properties.type].color}
     alphaCutoff={.5}
     billboard={false}
     getPolygonOffset={({ layerIndex }) => [0, -10000]}
@@ -140,13 +140,13 @@ function App() {
 
     iconAtlas={'chart-wind-arrow.png'}
     iconMapping={'chart-wind-arrow.json'}
-    getIcon={d => d.speedKnot}
-    getPosition={d => d.coordinates}
+    getIcon={d => d.properties.windSpeedKnot.value}
+    getPosition={d => d.geometry.coordinates}
     getSize={d => 50}
     getColor={d => settings['悪天情報（強風）'].color}
     alphaCutoff={.5}
     billboard={false}
-    getAngle={d => 360.0 - d.angle}
+    getAngle={d => 360.0 - d.properties.windDegree.value}
     getPolygonOffset={({ layerIndex }) => [0, -10000]}
   />);
 
