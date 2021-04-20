@@ -58,7 +58,7 @@ function App() {
           // レンダリングに必要な情報を補足する。
           geojson = modifyChartGeojson(geojson);
           const texts = createChartTexts(geojson);
-          const title = { ...geojson.properties, type: chartType };
+          const title = { ...geojson.properties, type: chartType, code:chartTypes[chartType].code };
           return { geojson: geojson, texts: texts, title: title };
         })
         .catch((err) => {
