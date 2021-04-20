@@ -1,5 +1,5 @@
 
-// LineLayer の緯線経線データ
+// LineLayer の緯線経線データを返す。
 export const latlonline = (() => {
     const d = 1;  // [°]。精度みたいなもの。
     const dlon = 10;  // [°]。
@@ -23,6 +23,7 @@ export const latlonline = (() => {
     return lines;
 })();
 
+// 前線を返す。
 export function getFronts(geojson) {
     const STATIONARY_FRONT_SPACE = 20;  // 停滞前線の奇数偶数区間の間隔
 
@@ -37,7 +38,6 @@ export function getFronts(geojson) {
 
             case '停滞前線':
                 {
-                    // レンダリングに必要な情報を補足する。
                     // 偶数区間と奇数区間を交互に色分けする表現。破線にした feature を生成して追加する。元の'停滞前線'は削除する。
 
                     const lines = [];
@@ -68,6 +68,7 @@ export function getFronts(geojson) {
     return ret;
 }
 
+// 等圧線を返す。
 export function getIsobars(geojson) {
     const AUXILIARY_ISOBAR_SPACE = 10;  // 等圧線の補助線の破線間隔
 
@@ -107,21 +108,25 @@ export function getIsobars(geojson) {
     return ret;
 }
 
-export function getStrongWinds(geojson) {
-    const targets = ['悪天情報（強風）'];
-    return geojson.features.filter(x => targets.includes(x.properties.type));
-}
-
+// 高気圧・低気圧などの中心マークを返す。
 export function getCenters(geojson) {
     const targets = ['台風', '低気圧', '高気圧', '熱帯低気圧', '低圧部'];
     return geojson.features.filter(x => targets.includes(x.properties.type));
 }
 
+// 悪天情報の強風を返す。
+export function getStrongWinds(geojson) {
+    const targets = ['悪天情報（強風）'];
+    return geojson.features.filter(x => targets.includes(x.properties.type));
+}
+
+// 悪天情報の海氷・船体着氷を返す。
 export function getIces(geojson) {
     const targets = ['悪天情報（海氷）', '悪天情報（船体着氷）'];
     return geojson.features.filter(x => targets.includes(x.properties.type));
 }
 
+// 悪天情報の霧を返す。
 export function getFogs(geojson) {
     const targets = ['悪天情報（霧）'];
     return geojson.features.filter(x => targets.includes(x.properties.type));
