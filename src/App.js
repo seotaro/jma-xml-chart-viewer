@@ -143,6 +143,7 @@ function App() {
     getIcon={d => d.speedKnot}
     getPosition={d => d.coordinates}
     getSize={d => 50}
+    getColor={d => settings['悪天情報（強風）'].color}
     alphaCutoff={.5}
     billboard={false}
     getAngle={d => 360.0 - d.angle}

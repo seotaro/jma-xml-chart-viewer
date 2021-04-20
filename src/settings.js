@@ -13,7 +13,7 @@ export const settings = {
     '低気圧': { text: '低', color: [255, 0, 0], },
     '熱帯低気圧': { text: '熱', color: [255, 0, 0], },
     '低圧部': { text: '低', color: [255, 0, 0], },
-    '悪天情報（強風）': { color: [255, 0, 0], radius: 4, isFill: true },
+    '悪天情報（強風）': { color: [127, 127, 127], },
     '悪天情報（霧）': { color: [255, 255, 0, 32], isFill: true },
     '悪天情報（海氷）': { color: [192, 192, 255, 127], isFill: true },
     '悪天情報（船体着氷）': { color: [255, 127, 255, 127], isFill: true },
