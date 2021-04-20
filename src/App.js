@@ -3,7 +3,7 @@ import './App.css';
 import React, { useState, useEffect, Fragment } from 'react';
 import DeckGL from '@deck.gl/react';
 import { GeoJsonLayer, SolidPolygonLayer, LineLayer, TextLayer, IconLayer } from '@deck.gl/layers';
-import { _GlobeView as GlobeView } from '@deck.gl/core';
+import { _GlobeView as GlobeView, MapView } from '@deck.gl/core';
 import { latlonline, getFronts, getIsobars, getStrongWinds, getCenters, getIces, getFogs } from './utils'
 import { settings } from './settings'
 import ChartTitle from './components/ChartTitle'
@@ -76,10 +76,10 @@ function App() {
   const chartTitle = chart && (<ChartTitle title={chart.title} />);
 
   const chartGeoJsonLayers = chart && ([
-    { id: `chart-isobar-layer`, data: chart.isobars },
-    { id: `chart-front-layer`, data: chart.fronts },
     { id: `chart-ice-layer`, data: chart.ices },
     { id: `chart-fog-layer`, data: chart.fogs },
+    { id: `chart-isobar-layer`, data: chart.isobars },
+    { id: `chart-front-layer`, data: chart.fronts },
   ]).map(x => {
     return (<GeoJsonLayer id={x.id}
       data={x.data}
@@ -98,8 +98,7 @@ function App() {
       lineWidthScale={1}
       getLineWidth={d => settings[d.properties.type].lineWidth ? settings[d.properties.type].lineWidth : 0}
 
-      parameters={{ depthTest: true, cull: true }}
-      getPolygonOffset={({ layerIndex }) => [0, -20000]}
+      parameters={{ cull: true }}
     />)
   })
 
@@ -108,49 +107,42 @@ function App() {
   const chartTextLayers = chart && (
     <TextLayer id={`chart-text-layer`}
       data={chart.centerMarks}
-      getAlignmentBaseline={'center'}
-      getAngle={0}
       getPosition={d => d.geometry.coordinates}
-      getSize={32}
+      getSize={d => settings[d.properties.type].textSize}
       getText={d => settings[d.properties.type].text}
       characterSet={characterSet}
       getTextAnchor={'middle'}
-      sizeScale={1}
+      getAlignmentBaseline={'center'}
       getColor={d => settings[d.properties.type].color}
-      getPixelOffset={[20, 20]}
-      getPolygonOffset={({ layerIndex }) => [0, -90000]}
+      billboard={false}
+      getAngle={d => 180.0}
+      getPixelOffset={[-20, -20]}
     />
   );
 
   const centerMarks = chart && (< IconLayer id='chart-center-mark-layer'
     data={chart.centerMarks}
     sizeUnits={'pixels'}
-
     iconAtlas={'chart-center-mark.png'}
     iconMapping={'chart-center-mark.json'}
     getIcon={d => 'center'}
     getPosition={d => d.geometry.coordinates}
-    getSize={d => 20}
+    getSize={d => settings[d.properties.type].iconSize}
     getColor={d => settings[d.properties.type].color}
-    alphaCutoff={.5}
     billboard={false}
-    getPolygonOffset={({ layerIndex }) => [0, -10000]}
   />);
 
   const windArrows = chart && (< IconLayer id='chart-wind-arrow-layer'
     data={chart.windArrows}
     sizeUnits={'pixels'}
-
     iconAtlas={'chart-wind-arrow.png'}
     iconMapping={'chart-wind-arrow.json'}
     getIcon={d => d.properties.windSpeedKnot.value}
     getPosition={d => d.geometry.coordinates}
-    getSize={d => 50}
+    getSize={d => settings[d.properties.type].iconSize}
     getColor={d => settings[d.properties.type].color}
-    alphaCutoff={.5}
     billboard={false}
     getAngle={d => 360.0 - d.properties.windDegree.value}
-    getPolygonOffset={({ layerIndex }) => [0, -10000]}
   />);
 
   return (
@@ -165,10 +157,19 @@ function App() {
         initialViewState={INITIAL_VIEW_STATE}
         controller={true}
       >
-        {centerMarks}
-        {windArrows}
-        {chartGeoJsonLayers}
-        {chartTextLayers}
+
+        <SolidPolygonLayer id='background'
+          data={[[[-180, 90], [0, 90], [180, 90], [180, -90], [0, -90], [-180, -90]]]}
+          getPolygon={d => d}
+          filled={true}
+          getFillColor={[32, 32, 32]}
+        />
+
+        <GeoJsonLayer id="map-layer"
+          data={MAP_URL}
+          filled={true}
+          getFillColor={[64, 64, 64]}
+        />
 
         < LineLayer id='latlon-line-layer'
           data={latlonline}
@@ -176,30 +177,19 @@ function App() {
           getTargetPosition={d => d.end}
           getColor={[127, 127, 127]}
           getWidth={1}
-          getPolygonOffset={({ layerIndex }) => [0, -10000]}
         />
 
-        <GeoJsonLayer id="map-layer"
-          data={MAP_URL}
-          filled={true}
-          getFillColor={[64, 64, 64]}
-          parameters={{ depthTest: true, cull: true }}
-          getPolygonOffset={({ layerIndex }) => [0, -10000]}
-        />
+        {chartGeoJsonLayers}
+        {centerMarks}
+        {windArrows}
+        {chartTextLayers}
 
-        <SolidPolygonLayer id='background'
-          data={[[[-180, 90], [0, 90], [180, 90], [180, -90], [0, -90], [-180, -90]]]}
-          getPolygon={d => d}
-          filled={true}
-          getFillColor={[32, 32, 32]}
-          parameters={{ depthTest: true, cull: true }}
-          getPolygonOffset={({ layerIndex }) => [0, 10000]}
-        />
-
-        <GlobeView id="map" width="100%" controller={true} />
+        <GlobeView id="map" width="100%" controller={true} resolution={1} />
       </DeckGL>
     </Fragment>
   );
 }
+
+{/* <MapView id="map" width="100%" controller={true} repeat={true} /> */ }
 
 export default App;
