@@ -1,4 +1,3 @@
-import { settings } from './settings'
 
 // LineLayer の緯線経線データ
 export const latlonline = (() => {
@@ -24,36 +23,21 @@ export const latlonline = (() => {
     return lines;
 })();
 
-// レンダリングに必要な情報を補足する。
-export function modifyChartGeojson(geojson) {
-    const AUXILIARY_ISOBAR_SPACE = 10;  // 等圧線の補助線の破線間隔
+export function getFronts(geojson) {
     const STATIONARY_FRONT_SPACE = 20;  // 停滞前線の奇数偶数区間の間隔
 
-    const addFeatures = [];
-    const deleteFeatures = [];
+    const ret = [];
     for (const feature of geojson.features) {
         switch (feature.properties.type) {
-            case '等圧線':
-                if ((feature.properties.pressure.value % 20) === 0) {
-                    // 20hPa 毎の主線。元の feature を上書きする。
-                    feature.properties.type = '等圧線（主線）';
-
-                } else if (feature.properties.pressure.value % 4) {
-                    // 補助線。元の feature を破線で上書きする。
-
-                    const lines = [];
-                    for (let i = 0; i < (feature.geometry.coordinates.length - 1); i++) {
-                        lines.push([feature.geometry.coordinates[i], feature.geometry.coordinates[i + 1]]);
-                    }
-
-                    feature.properties.type = '等圧線（補助）';
-                    feature.geometry.type = 'MultiLineString';
-                    feature.geometry.coordinates = lines.filter((line, i) => (parseInt(i / AUXILIARY_ISOBAR_SPACE) % 2 === 0));
-                }
+            case '寒冷前線':
+            case '温暖前線':
+            case '閉塞前線':
+                ret.push(feature);
                 break;
 
             case '停滞前線':
                 {
+                    // レンダリングに必要な情報を補足する。
                     // 偶数区間と奇数区間を交互に色分けする表現。破線にした feature を生成して追加する。元の'停滞前線'は削除する。
 
                     const lines = [];
@@ -74,30 +58,71 @@ export function modifyChartGeojson(geojson) {
                     odd.geometry.coordinates = lines.filter((line, i) => (parseInt(i / STATIONARY_FRONT_SPACE) % 2 === 0));
                     even.geometry.coordinates = lines.filter((line, i) => (parseInt(i / STATIONARY_FRONT_SPACE) % 2 !== 0));
 
-                    addFeatures.push(odd);
-                    addFeatures.push(even);
-
-                    deleteFeatures.push(feature);
+                    ret.push(odd);
+                    ret.push(even);
                 }
                 break;
         }
     }
 
-    geojson.features = geojson.features.filter(feature => !deleteFeatures.includes(feature));
-
-    for (const feature of addFeatures) {
-        geojson.features.push(feature);
-    }
-
-    return geojson;
+    return ret;
 }
 
-export function getWindArrows(geojson) {
+export function getIsobars(geojson) {
+    const AUXILIARY_ISOBAR_SPACE = 10;  // 等圧線の補助線の破線間隔
+
+    const ret = [];
+    for (const feature of geojson.features) {
+        switch (feature.properties.type) {
+            case '等圧線':
+                // レンダリングに必要な情報を補足する。
+
+                if ((feature.properties.pressure.value % 20) === 0) {
+                    // 20hPa 毎の主線。元の feature を上書きする。
+                    const isobar = { ...feature }
+                    isobar.properties.type = '等圧線（主線）';
+                    ret.push(isobar);
+
+                } else if (feature.properties.pressure.value % 4) {
+                    // 補助線。元の feature を破線で上書きする。
+
+                    const lines = [];
+                    for (let i = 0; i < (feature.geometry.coordinates.length - 1); i++) {
+                        lines.push([feature.geometry.coordinates[i], feature.geometry.coordinates[i + 1]]);
+                    }
+
+                    const isobar = { ...feature }
+                    isobar.properties.type = '等圧線（補助）';
+                    isobar.geometry.type = 'MultiLineString';
+                    isobar.geometry.coordinates = lines.filter((line, i) => (parseInt(i / AUXILIARY_ISOBAR_SPACE) % 2 === 0));
+                    ret.push(isobar);
+
+                } else {
+                    ret.push(feature);
+                }
+                break;
+        }
+    }
+
+    return ret;
+}
+
+export function getStrongWinds(geojson) {
     const targets = ['悪天情報（強風）'];
     return geojson.features.filter(x => targets.includes(x.properties.type));
 }
 
-export function getCenterMarks(geojson) {
+export function getCenters(geojson) {
     const targets = ['台風', '低気圧', '高気圧', '熱帯低気圧', '低圧部'];
+    return geojson.features.filter(x => targets.includes(x.properties.type));
+}
+
+export function getIces(geojson) {
+    const targets = ['悪天情報（海氷）', '悪天情報（船体着氷）'];
+    return geojson.features.filter(x => targets.includes(x.properties.type));
+}
+
+export function getFogs(geojson) {
+    const targets = ['悪天情報（霧）'];
     return geojson.features.filter(x => targets.includes(x.properties.type));
 }

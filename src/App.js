@@ -4,7 +4,7 @@ import React, { useState, useEffect, Fragment } from 'react';
 import DeckGL from '@deck.gl/react';
 import { GeoJsonLayer, SolidPolygonLayer, LineLayer, TextLayer, IconLayer } from '@deck.gl/layers';
 import { _GlobeView as GlobeView } from '@deck.gl/core';
-import { latlonline, modifyChartGeojson, getWindArrows, getCenterMarks } from './utils'
+import { latlonline, getFronts, getIsobars, getStrongWinds, getCenters, getIces, getFogs } from './utils'
 import { settings } from './settings'
 import ChartTitle from './components/ChartTitle'
 import ChartTypeSelector from './components/ChartTypeSelector'
@@ -56,11 +56,14 @@ function App() {
         })
         .then(geojson => {
           // レンダリングに必要な情報を補足する。
-          geojson = modifyChartGeojson(geojson);
           const title = { ...geojson.properties, type: chartType, code: chartTypes[chartType].code };
-          const windArrows = getWindArrows(geojson);
-          const centerMarks = getCenterMarks(geojson);
-          return { geojson: geojson, title: title, windArrows: windArrows, centerMarks: centerMarks };
+          const isobars = getIsobars(geojson);
+          const fronts = getFronts(geojson);
+          const windArrows = getStrongWinds(geojson);
+          const centerMarks = getCenters(geojson);
+          const ices = getIces(geojson);
+          const fogs = getFogs(geojson);
+          return { fronts: fronts, isobars: isobars, title: title, windArrows: windArrows, centerMarks: centerMarks, ices: ices, fogs: fogs };
         })
         .catch((err) => {
           console.error(`${err}`);
@@ -70,9 +73,9 @@ function App() {
     })();
   }, [chartType]);
 
-  const chartLayers = chart && (
-    <GeoJsonLayer id={`chart-shape-layer`}
-      data={chart.geojson}
+  const chartIsobarLayers = chart && (
+    <GeoJsonLayer id={`chart-isobar-layer`}
+      data={chart.isobars}
 
       stroked={d => settings[d.properties.type].isStroke ? settings[d.properties.type].isStroke : false}
       filled={d => settings[d.properties.type].isFill ? settings[d.properties.type].isFill : false}
@@ -93,6 +96,76 @@ function App() {
     />
   );
 
+
+  const chartFrontLayers = chart && (
+    <GeoJsonLayer id={`chart-front-layer`}
+      data={chart.fronts}
+
+      stroked={d => settings[d.properties.type].isStroke ? settings[d.properties.type].isStroke : false}
+      filled={d => settings[d.properties.type].isFill ? settings[d.properties.type].isFill : false}
+
+      getFillColor={d => settings[d.properties.type].color}
+      getLineColor={d => settings[d.properties.type].color}
+
+      pointRadiusUnits={'pixels'}
+      pointRadiusScale={1}
+      getRadius={d => settings[d.properties.type].radius ? settings[d.properties.type].radius : 0}
+
+      lineWidthUnits={'pixels'}
+      lineWidthScale={1}
+      getLineWidth={d => settings[d.properties.type].lineWidth ? settings[d.properties.type].lineWidth : 0}
+
+      parameters={{ depthTest: true, cull: true }}
+      getPolygonOffset={({ layerIndex }) => [0, -20000]}
+    />
+  );
+
+
+  const chartIceLayers = chart && (
+    <GeoJsonLayer id={`chart-ice-layer`}
+      data={chart.ices}
+
+      stroked={d => settings[d.properties.type].isStroke ? settings[d.properties.type].isStroke : false}
+      filled={d => settings[d.properties.type].isFill ? settings[d.properties.type].isFill : false}
+
+      getFillColor={d => settings[d.properties.type].color}
+      getLineColor={d => settings[d.properties.type].color}
+
+      pointRadiusUnits={'pixels'}
+      pointRadiusScale={1}
+      getRadius={d => settings[d.properties.type].radius ? settings[d.properties.type].radius : 0}
+
+      lineWidthUnits={'pixels'}
+      lineWidthScale={1}
+      getLineWidth={d => settings[d.properties.type].lineWidth ? settings[d.properties.type].lineWidth : 0}
+
+      parameters={{ depthTest: true, cull: true }}
+      getPolygonOffset={({ layerIndex }) => [0, -20000]}
+    />
+  );
+
+  const chartFogLayers = chart && (
+    <GeoJsonLayer id={`chart-fog-layer`}
+      data={chart.fogs}
+
+      stroked={d => settings[d.properties.type].isStroke ? settings[d.properties.type].isStroke : false}
+      filled={d => settings[d.properties.type].isFill ? settings[d.properties.type].isFill : false}
+
+      getFillColor={d => settings[d.properties.type].color}
+      getLineColor={d => settings[d.properties.type].color}
+
+      pointRadiusUnits={'pixels'}
+      pointRadiusScale={1}
+      getRadius={d => settings[d.properties.type].radius ? settings[d.properties.type].radius : 0}
+
+      lineWidthUnits={'pixels'}
+      lineWidthScale={1}
+      getLineWidth={d => settings[d.properties.type].lineWidth ? settings[d.properties.type].lineWidth : 0}
+
+      parameters={{ depthTest: true, cull: true }}
+      getPolygonOffset={({ layerIndex }) => [0, -20000]}
+    />
+  );
 
   const characterSet = Object.keys(settings).map(k => settings[k]).filter(x => x.text).map(x => x.text);
   const chartTextLayers = chart && (
@@ -159,7 +232,10 @@ function App() {
       >
         {centerMarks}
         {windArrows}
-        {chartLayers}
+        {chartIceLayers}
+        {chartFogLayers}
+        {chartFrontLayers}
+        {chartIsobarLayers}
         {chartTextLayers}
 
         < LineLayer id='latlon-line-layer'
