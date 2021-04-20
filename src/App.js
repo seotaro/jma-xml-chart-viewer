@@ -2,9 +2,9 @@ import './App.css';
 
 import React, { useState, useEffect, Fragment } from 'react';
 import DeckGL from '@deck.gl/react';
-import { GeoJsonLayer, SolidPolygonLayer, LineLayer, TextLayer } from '@deck.gl/layers';
+import { GeoJsonLayer, SolidPolygonLayer, LineLayer, TextLayer, IconLayer } from '@deck.gl/layers';
 import { _GlobeView as GlobeView } from '@deck.gl/core';
-import { latlonline, modifyChartGeojson, createChartTexts } from './utils'
+import { latlonline, modifyChartGeojson, createChartTexts, createWindArrows } from './utils'
 import { settings } from './settings'
 import ChartTitle from './components/ChartTitle'
 import ChartTypeSelector from './components/ChartTypeSelector'
@@ -58,8 +58,9 @@ function App() {
           // レンダリングに必要な情報を補足する。
           geojson = modifyChartGeojson(geojson);
           const texts = createChartTexts(geojson);
-          const title = { ...geojson.properties, type: chartType, code:chartTypes[chartType].code };
-          return { geojson: geojson, texts: texts, title: title };
+          const title = { ...geojson.properties, type: chartType, code: chartTypes[chartType].code };
+          const windArrows = createWindArrows(geojson);
+          return { geojson: geojson, texts: texts, title: title, windArrows: windArrows };
         })
         .catch((err) => {
           console.error(`${err}`);
@@ -117,6 +118,21 @@ function App() {
 
   const chartTitle = chart && (<ChartTitle title={chart.title} />);
 
+  const windArrows = chart && (< IconLayer id='chart-arrow-layer'
+    data={chart.windArrows}
+    sizeUnits={'pixels'}
+
+    iconAtlas={'chart-wind-arrow.png'}
+    iconMapping={'chart-wind-arrow.json'}
+    getIcon={d => d.speedKnot}
+    getPosition={d => d.coordinates}
+    getSize={d => 50}
+    alphaCutoff={.5}
+    billboard={false}
+    getAngle={d => 360.0 - d.angle}
+    getPolygonOffset={({ layerIndex }) => [0, -10000]}
+  />);
+
   return (
     <Fragment>
       {chartTitle}
@@ -125,7 +141,7 @@ function App() {
         initialViewState={INITIAL_VIEW_STATE}
         controller={true}
       >
-
+        {windArrows}
         {chartLayers}
         {chartTextLayers}
 

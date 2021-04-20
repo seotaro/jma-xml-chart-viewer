@@ -134,3 +134,22 @@ export function createChartTexts(chart) {
     }
     return texts;
 }
+
+export function createWindArrows(geojson) {
+    const winds = [];
+    for (const feature of geojson.features) {
+        switch (feature.properties.type) {
+            case '悪天情報（強風）':
+                console.log(feature.geometry.coordinates, feature.properties.windDegree.value, feature.properties.windSpeedKnot.value);
+
+                winds.push({
+                    coordinates: feature.geometry.coordinates,
+                    angle: feature.properties.windDegree.value,
+                    speedKnot: feature.properties.windSpeedKnot.value
+                })
+                break;
+        }
+    }
+
+    return winds;
+}
