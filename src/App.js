@@ -59,10 +59,10 @@ function App() {
           const title = { ...geojson.properties, type: chartType, code: chartTypes[chartType].code };
           const isobars = getIsobars(geojson);
           const fronts = getFronts(geojson);
-          const windArrows = getStrongWinds(geojson);
-          const centerMarks = getCenters(geojson);
           const ices = getIces(geojson);
           const fogs = getFogs(geojson);
+          const windArrows = getStrongWinds(geojson);
+          const centerMarks = getCenters(geojson);
           return { fronts: fronts, isobars: isobars, title: title, windArrows: windArrows, centerMarks: centerMarks, ices: ices, fogs: fogs };
         })
         .catch((err) => {
@@ -73,9 +73,14 @@ function App() {
     })();
   }, [chartType]);
 
-  const chartIsobarLayers = chart && (
-    <GeoJsonLayer id={`chart-isobar-layer`}
-      data={chart.isobars}
+  const geoJsonLayers = chart && ([
+    { id: `chart-isobar-layer`, data: chart.isobars },
+    { id: `chart-front-layer`, data: chart.fronts },
+    { id: `chart-ice-layer`, data: chart.ices },
+    { id: `chart-fog-layer`, data: chart.fogs },
+  ]).map(x => {
+    return (<GeoJsonLayer id={x.id}
+      data={x.data}
 
       stroked={d => settings[d.properties.type].isStroke ? settings[d.properties.type].isStroke : false}
       filled={d => settings[d.properties.type].isFill ? settings[d.properties.type].isFill : false}
@@ -93,79 +98,9 @@ function App() {
 
       parameters={{ depthTest: true, cull: true }}
       getPolygonOffset={({ layerIndex }) => [0, -20000]}
-    />
-  );
+    />)
+  })
 
-
-  const chartFrontLayers = chart && (
-    <GeoJsonLayer id={`chart-front-layer`}
-      data={chart.fronts}
-
-      stroked={d => settings[d.properties.type].isStroke ? settings[d.properties.type].isStroke : false}
-      filled={d => settings[d.properties.type].isFill ? settings[d.properties.type].isFill : false}
-
-      getFillColor={d => settings[d.properties.type].color}
-      getLineColor={d => settings[d.properties.type].color}
-
-      pointRadiusUnits={'pixels'}
-      pointRadiusScale={1}
-      getRadius={d => settings[d.properties.type].radius ? settings[d.properties.type].radius : 0}
-
-      lineWidthUnits={'pixels'}
-      lineWidthScale={1}
-      getLineWidth={d => settings[d.properties.type].lineWidth ? settings[d.properties.type].lineWidth : 0}
-
-      parameters={{ depthTest: true, cull: true }}
-      getPolygonOffset={({ layerIndex }) => [0, -20000]}
-    />
-  );
-
-
-  const chartIceLayers = chart && (
-    <GeoJsonLayer id={`chart-ice-layer`}
-      data={chart.ices}
-
-      stroked={d => settings[d.properties.type].isStroke ? settings[d.properties.type].isStroke : false}
-      filled={d => settings[d.properties.type].isFill ? settings[d.properties.type].isFill : false}
-
-      getFillColor={d => settings[d.properties.type].color}
-      getLineColor={d => settings[d.properties.type].color}
-
-      pointRadiusUnits={'pixels'}
-      pointRadiusScale={1}
-      getRadius={d => settings[d.properties.type].radius ? settings[d.properties.type].radius : 0}
-
-      lineWidthUnits={'pixels'}
-      lineWidthScale={1}
-      getLineWidth={d => settings[d.properties.type].lineWidth ? settings[d.properties.type].lineWidth : 0}
-
-      parameters={{ depthTest: true, cull: true }}
-      getPolygonOffset={({ layerIndex }) => [0, -20000]}
-    />
-  );
-
-  const chartFogLayers = chart && (
-    <GeoJsonLayer id={`chart-fog-layer`}
-      data={chart.fogs}
-
-      stroked={d => settings[d.properties.type].isStroke ? settings[d.properties.type].isStroke : false}
-      filled={d => settings[d.properties.type].isFill ? settings[d.properties.type].isFill : false}
-
-      getFillColor={d => settings[d.properties.type].color}
-      getLineColor={d => settings[d.properties.type].color}
-
-      pointRadiusUnits={'pixels'}
-      pointRadiusScale={1}
-      getRadius={d => settings[d.properties.type].radius ? settings[d.properties.type].radius : 0}
-
-      lineWidthUnits={'pixels'}
-      lineWidthScale={1}
-      getLineWidth={d => settings[d.properties.type].lineWidth ? settings[d.properties.type].lineWidth : 0}
-
-      parameters={{ depthTest: true, cull: true }}
-      getPolygonOffset={({ layerIndex }) => [0, -20000]}
-    />
-  );
 
   const characterSet = Object.keys(settings).map(k => settings[k]).filter(x => x.text).map(x => x.text);
   const chartTextLayers = chart && (
@@ -215,7 +150,7 @@ function App() {
     getIcon={d => d.properties.windSpeedKnot.value}
     getPosition={d => d.geometry.coordinates}
     getSize={d => 50}
-    getColor={d => settings['悪天情報（強風）'].color}
+    getColor={d => settings[d.properties.type].color}
     alphaCutoff={.5}
     billboard={false}
     getAngle={d => 360.0 - d.properties.windDegree.value}
@@ -225,38 +160,33 @@ function App() {
   return (
     <Fragment>
       {chartTitle}
-      <ChartTypeSelector types={chartTypes} handleChangeType={handleChangeChartType} />
+
+      <ChartTypeSelector
+        types={chartTypes}
+        handleChangeType={handleChangeChartType} />
+
       <DeckGL
         initialViewState={INITIAL_VIEW_STATE}
         controller={true}
       >
         {centerMarks}
         {windArrows}
-        {chartIceLayers}
-        {chartFogLayers}
-        {chartFrontLayers}
-        {chartIsobarLayers}
+        {geoJsonLayers}
         {chartTextLayers}
 
         < LineLayer id='latlon-line-layer'
           data={latlonline}
-
           getSourcePosition={d => d.start}
           getTargetPosition={d => d.end}
-
           getColor={[127, 127, 127]}
           getWidth={1}
-
           getPolygonOffset={({ layerIndex }) => [0, -10000]}
         />
 
         <GeoJsonLayer id="map-layer"
           data={MAP_URL}
-
           filled={true}
-
           getFillColor={[64, 64, 64]}
-
           parameters={{ depthTest: true, cull: true }}
           getPolygonOffset={({ layerIndex }) => [0, -10000]}
         />
@@ -264,10 +194,8 @@ function App() {
         <SolidPolygonLayer id='background'
           data={[[[-180, 90], [0, 90], [180, 90], [180, -90], [0, -90], [-180, -90]]]}
           getPolygon={d => d}
-
           filled={true}
           getFillColor={[32, 32, 32]}
-
           parameters={{ depthTest: true, cull: true }}
           getPolygonOffset={({ layerIndex }) => [0, 10000]}
         />
