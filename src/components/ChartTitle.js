@@ -2,7 +2,7 @@ import React from 'react';
 import './ChartTitle.css';
 import moment from 'moment';
 
-function Title(props) {
+function ChartTitle(props) {
 
   return (
     <article className='ChartTitle'>
@@ -13,4 +13,4 @@ function Title(props) {
   );
 }
 
-export default Title;
+export default ChartTitle;
