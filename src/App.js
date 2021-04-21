@@ -4,7 +4,7 @@ import React, { useState, useEffect, Fragment } from 'react';
 import DeckGL from '@deck.gl/react';
 import { GeoJsonLayer, SolidPolygonLayer, LineLayer, TextLayer, IconLayer } from '@deck.gl/layers';
 import { _GlobeView as GlobeView, MapView } from '@deck.gl/core';
-import { latlonline, getFronts, getIsobars, getStrongWinds, getCenters, getIces, getFogs } from './utils'
+import { getFronts, getIsobars, getStrongWinds, getCenters, getIces, getFogs, latlonlineGeoJson } from './utils'
 import { settings } from './settings'
 import ChartTitle from './components/ChartTitle'
 import ChartTypeSelector from './components/ChartTypeSelector'
@@ -164,12 +164,17 @@ function App() {
           getFillColor={settings.mapLayer.color}
         />
 
-        < LineLayer id='latlon-line-layer'
-          data={latlonline}
-          getSourcePosition={d => d.start}
-          getTargetPosition={d => d.end}
-          getColor={settings.latlonLineLayer.color}
-          getWidth={1}
+        <GeoJsonLayer id="latlon-line-layer"
+          data={latlonlineGeoJson}
+          stroked={true}
+          getLineColor={settings.latlonLineLayer.color}
+          lineWidthUnits={'pixels'}
+          lineWidthScale={1}
+          getLineWidth={1}
+
+          pickable={true}
+          highlightColor={settings.highlight.color}
+          autoHighlight={true}
         />
 
         {chartGeoJsonLayers}
