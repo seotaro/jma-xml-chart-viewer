@@ -34,7 +34,7 @@ function App() {
           return JSON.parse(text);
         })
         .then(geojson => {
-          // レンダリングに必要な情報を補足する。
+          // 要素毎にレイヤーに分ける。
           const title = { ...geojson.properties, type: chartType, code: settings.chartTypes[chartType].code };
           const isobars = getIsobars(geojson);
           const fronts = getFronts(geojson);
