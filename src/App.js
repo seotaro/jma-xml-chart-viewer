@@ -74,6 +74,10 @@ function App() {
       lineWidthScale={1}
       getLineWidth={d => settings.chart[d.properties.type].lineWidth ? settings.chart[d.properties.type].lineWidth : 0}
       parameters={{ cull: true }}
+
+      pickable={true}
+      highlightColor={settings.highlight.color}
+      autoHighlight={true}
     />)
   })
 
@@ -106,6 +110,10 @@ function App() {
       getSize={d => settings.chart[d.properties.type].iconSize}
       getColor={d => settings.chart[d.properties.type].color}
       billboard={false}
+
+      pickable={true}
+      highlightColor={settings.highlight.color}
+      autoHighlight={true}
     />
   );
 
@@ -121,6 +129,10 @@ function App() {
       getColor={d => settings.chart[d.properties.type].color}
       billboard={false}
       getAngle={d => 360.0 - d.properties.windDegree.value}
+
+      pickable={true}
+      highlightColor={settings.highlight.color}
+      autoHighlight={true}
     />
   );
 
@@ -135,6 +147,8 @@ function App() {
       <DeckGL
         initialViewState={settings.initialViewState}
         controller={true}
+        getTooltip={({ object }) => object && object.info}
+        getCursor={({ isHovering }) => isHovering ? 'pointer' : 'grab'}
       >
 
         <SolidPolygonLayer id='background-layer'
@@ -165,7 +179,7 @@ function App() {
 
         <GlobeView id="map" width="100%" controller={true} resolution={1} />
       </DeckGL>
-    </Fragment>
+    </Fragment >
   );
 }
 

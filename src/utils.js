@@ -33,7 +33,9 @@ export function getFronts(geojson) {
             case '寒冷前線':
             case '温暖前線':
             case '閉塞前線':
-                ret.push(feature);
+                const front = { ...feature };
+                front.info = `${feature.properties.type}`;
+                ret.push(front);
                 break;
 
             case '停滞前線':
@@ -57,6 +59,8 @@ export function getFronts(geojson) {
                     even.geometry.type = 'MultiLineString';
                     odd.geometry.coordinates = lines.filter((line, i) => (parseInt(i / STATIONARY_FRONT_SPACE) % 2 === 0));
                     even.geometry.coordinates = lines.filter((line, i) => (parseInt(i / STATIONARY_FRONT_SPACE) % 2 !== 0));
+                    odd.info = `${feature.properties.type}`;
+                    even.info = `${feature.properties.type}`;
 
                     ret.push(odd);
                     ret.push(even);
@@ -78,29 +82,29 @@ export function getIsobars(geojson) {
             case '等圧線':
                 // レンダリングに必要な情報を補足する。
 
-                if ((feature.properties.pressure.value % 20) === 0) {
-                    // 20hPa 毎の主線。元の feature を上書きする。
-                    const isobar = { ...feature }
+                const isobar = { ...feature };
+                isobar.info = `等圧線（${isobar.properties.pressure.value} ${isobar.properties.pressure.unit}）`;
+
+                if ((isobar.properties.pressure.value % 20) === 0) {
+                    // 20hPa 毎の主線。
                     isobar.properties.type = '等圧線（主線）';
                     ret.push(isobar);
 
-                } else if (feature.properties.pressure.value % 4) {
-                    // 補助線。元の feature を破線で上書きする。
+                } else if (isobar.properties.pressure.value % 4) {
+                    // 補助線。
 
                     const lines = [];
-                    for (let i = 0; i < (feature.geometry.coordinates.length - 1); i++) {
-                        lines.push([feature.geometry.coordinates[i], feature.geometry.coordinates[i + 1]]);
+                    for (let i = 0; i < (isobar.geometry.coordinates.length - 1); i++) {
+                        lines.push([isobar.geometry.coordinates[i], isobar.geometry.coordinates[i + 1]]);
                     }
 
-                    const isobar = { ...feature }
                     isobar.properties.type = '等圧線（補助）';
                     isobar.geometry.type = 'MultiLineString';
                     isobar.geometry.coordinates = lines.filter((line, i) => (parseInt(i / AUXILIARY_ISOBAR_SPACE) % 2 === 0));
                     ret.push(isobar);
-
-                } else {
-                    ret.push(feature);
                 }
+
+                ret.push(isobar);
                 break;
         }
     }
@@ -111,23 +115,60 @@ export function getIsobars(geojson) {
 // 高気圧・低気圧などの中心マークを返す。
 export function getCenters(geojson) {
     const targets = ['台風', '低気圧', '高気圧', '熱帯低気圧', '低圧部'];
-    return geojson.features.filter(x => targets.includes(x.properties.type));
+    return geojson.features
+        .filter(x => targets.includes(x.properties.type))
+        .map(x => {
+            const xx = { ...x };
+            if (xx.properties.type === '台風') {
+                xx.info = `${xx.properties.type}（\n\
+                                T${xx.properties.number} \n名称 : ${xx.properties.nameKana} \n階級 : ${xx.properties.class}
+                                中心気圧 : ${xx.properties.pressure.value} ${xx.properties.pressure.unit} \n\
+                                進行速度 : ${xx.properties.speed.value} ${xx.properties.speed.unit} \n\
+                                進行方向 : ${xx.properties.direction.value} ${xx.properties.direction.unit} \n\
+                                風速 : ${xx.properties.windSpeed.value} ${xx.properties.windSpeed.unit}\n）`;
+            } else {
+                xx.info = `${xx.properties.type}（\n\
+                                中心気圧 : ${xx.properties.pressure.value} ${xx.properties.pressure.unit} \n\
+                                進行速度 : ${xx.properties.speed.value} ${xx.properties.speed.unit} \n\
+                                進行方向 : ${xx.properties.direction.value} ${xx.properties.direction.unit} \n）`;
+            }
+            return xx;
+        });
 }
 
 // 悪天情報の強風を返す。
 export function getStrongWinds(geojson) {
     const targets = ['悪天情報（強風）'];
-    return geojson.features.filter(x => targets.includes(x.properties.type));
+    return geojson.features
+        .filter(x => targets.includes(x.properties.type))
+        .map(x => {
+            const xx = { ...x };
+            xx.info = `${xx.properties.type}（${xx.properties.windSpeedKnot.value} ${xx.properties.windSpeedKnot.unit}）`;
+            return xx;
+        });
+
 }
 
 // 悪天情報の海氷・船体着氷を返す。
 export function getIces(geojson) {
     const targets = ['悪天情報（海氷）', '悪天情報（船体着氷）'];
-    return geojson.features.filter(x => targets.includes(x.properties.type));
+    return geojson.features
+        .filter(x => targets.includes(x.properties.type))
+        .map(x => {
+            const xx = { ...x };
+            xx.info = `${xx.properties.type}`;
+            return xx;
+        });
 }
 
 // 悪天情報の霧を返す。
 export function getFogs(geojson) {
     const targets = ['悪天情報（霧）'];
-    return geojson.features.filter(x => targets.includes(x.properties.type));
+    return geojson.features
+        .filter(x => targets.includes(x.properties.type))
+        .map(x => {
+            const xx = { ...x };
+            xx.info = `${xx.properties.type}`;
+            return xx;
+        });;
 }

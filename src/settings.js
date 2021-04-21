@@ -54,6 +54,8 @@ export const settings = {
         iconAtlas: 'chart-center-mark.png',
         iconMapping: 'chart-center-mark.json'
     },
-
+    highlight: {
+        color: [255, 127, 127, 127]
+    }
 
 };
