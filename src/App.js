@@ -9,33 +9,13 @@ import { settings } from './settings'
 import ChartTitle from './components/ChartTitle'
 import ChartTypeSelector from './components/ChartTypeSelector'
 
-
-
-// Viewport settings
-const INITIAL_VIEW_STATE = {
-  longitude: 140.0,
-  latitude: 40.0,
-  zoom: 1.2,
-};
-
-const MAP_URL = 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_land.geojson';
-
-const chartTypes = {
-  'VZSA50': { name: '地上実況図', code: 'SPAS' },
-  'VZSA60': { name: 'アジア太平洋地上実況図', code: 'ASAS' },
-  'VZSF50': { name: '地上24時間予想図', code: 'FSAS24' },
-  'VZSF60': { name: 'アジア太平洋海上悪天24時間予想図', code: 'FSAS24' },
-  'VZSF51': { name: '地上48時間予想図', code: 'FSAS48' },
-  'VZSF61': { name: 'アジア太平洋海上悪天48時間予想図', code: 'FSAS48' },
-};
-
 function App() {
   const [chart, setChart] = useState(null);
-  const [chartType, setChartType] = useState(Object.keys(chartTypes)[0]);
+  const [chartType, setChartType] = useState(Object.keys(settings.chartTypes)[0]);
 
   useEffect(() => {
     (async () => {
-      const LATEST_URL = `https://jma-xml-api-mrfbzypr4q-an.a.run.app/${chartType}/latest.json`;
+      const LATEST_URL = `${settings.api.jmaxml}/${chartType}/latest.json`;
 
       const chart = await fetch(LATEST_URL)
         .then(res => {
@@ -45,7 +25,7 @@ function App() {
           return JSON.parse(text);
         })
         .then(latest => {
-          return fetch(`https://xml2chart-api-mrfbzypr4q-an.a.run.app/?url=${latest[0].url}`)
+          return fetch(`${settings.api.xml2chart}/?url=${latest[0].url}`)
         })
         .then(res => {
           return res.text();
@@ -55,7 +35,7 @@ function App() {
         })
         .then(geojson => {
           // レンダリングに必要な情報を補足する。
-          const title = { ...geojson.properties, type: chartType, code: chartTypes[chartType].code };
+          const title = { ...geojson.properties, type: chartType, code: settings.chartTypes[chartType].code };
           const isobars = getIsobars(geojson);
           const fronts = getFronts(geojson);
           const ices = getIces(geojson);
@@ -83,99 +63,98 @@ function App() {
   ]).map(x => {
     return (<GeoJsonLayer id={x.id}
       data={x.data}
-
-      stroked={d => settings[d.properties.type].isStroke ? settings[d.properties.type].isStroke : false}
-      filled={d => settings[d.properties.type].isFill ? settings[d.properties.type].isFill : false}
-
-      getFillColor={d => settings[d.properties.type].color}
-      getLineColor={d => settings[d.properties.type].color}
-
+      stroked={d => settings.chart[d.properties.type].isStroke ? settings.chart[d.properties.type].isStroke : false}
+      filled={d => settings.chart[d.properties.type].isFill ? settings.chart[d.properties.type].isFill : false}
+      getFillColor={d => settings.chart[d.properties.type].color}
+      getLineColor={d => settings.chart[d.properties.type].color}
       pointRadiusUnits={'pixels'}
       pointRadiusScale={1}
-      getRadius={d => settings[d.properties.type].radius ? settings[d.properties.type].radius : 0}
-
+      getRadius={d => settings.chart[d.properties.type].radius ? settings.chart[d.properties.type].radius : 0}
       lineWidthUnits={'pixels'}
       lineWidthScale={1}
-      getLineWidth={d => settings[d.properties.type].lineWidth ? settings[d.properties.type].lineWidth : 0}
-
+      getLineWidth={d => settings.chart[d.properties.type].lineWidth ? settings.chart[d.properties.type].lineWidth : 0}
       parameters={{ cull: true }}
     />)
   })
 
 
-  const characterSet = Object.keys(settings).map(k => settings[k]).filter(x => x.text).map(x => x.text);
+  const characterSet = Object.keys(settings.chart).map(k => settings.chart[k]).filter(x => x.text).map(x => x.text);
   const chartTextLayers = chart && (
     <TextLayer id={`chart-text-layer`}
       data={chart.centerMarks}
       getPosition={d => d.geometry.coordinates}
-      getSize={d => settings[d.properties.type].textSize}
-      getText={d => settings[d.properties.type].text}
+      getSize={d => settings.chart[d.properties.type].textSize}
+      getText={d => settings.chart[d.properties.type].text}
       characterSet={characterSet}
       getTextAnchor={'middle'}
       getAlignmentBaseline={'center'}
-      getColor={d => settings[d.properties.type].color}
+      getColor={d => settings.chart[d.properties.type].color}
       billboard={false}
       getAngle={d => 180.0}
       getPixelOffset={[-20, -20]}
     />
   );
 
-  const centerMarks = chart && (< IconLayer id='chart-center-mark-layer'
-    data={chart.centerMarks}
-    sizeUnits={'pixels'}
-    iconAtlas={'chart-center-mark.png'}
-    iconMapping={'chart-center-mark.json'}
-    getIcon={d => 'center'}
-    getPosition={d => d.geometry.coordinates}
-    getSize={d => settings[d.properties.type].iconSize}
-    getColor={d => settings[d.properties.type].color}
-    billboard={false}
-  />);
+  const centerMarks = chart && (
+    < IconLayer id='chart-center-mark-layer'
+      data={chart.centerMarks}
+      sizeUnits={'pixels'}
+      iconAtlas={settings.centerMarkLayer.iconAtlas}
+      iconMapping={settings.centerMarkLayer.iconMapping}
+      getIcon={d => 'center'}
+      getPosition={d => d.geometry.coordinates}
+      getSize={d => settings.chart[d.properties.type].iconSize}
+      getColor={d => settings.chart[d.properties.type].color}
+      billboard={false}
+    />
+  );
 
-  const windArrows = chart && (< IconLayer id='chart-wind-arrow-layer'
-    data={chart.windArrows}
-    sizeUnits={'pixels'}
-    iconAtlas={'chart-wind-arrow.png'}
-    iconMapping={'chart-wind-arrow.json'}
-    getIcon={d => d.properties.windSpeedKnot.value}
-    getPosition={d => d.geometry.coordinates}
-    getSize={d => settings[d.properties.type].iconSize}
-    getColor={d => settings[d.properties.type].color}
-    billboard={false}
-    getAngle={d => 360.0 - d.properties.windDegree.value}
-  />);
+  const windArrows = chart && (
+    < IconLayer id='chart-wind-arrow-layer'
+      data={chart.windArrows}
+      sizeUnits={'pixels'}
+      iconAtlas={settings.windArrowLayer.iconAtlas}
+      iconMapping={settings.windArrowLayer.iconMapping}
+      getIcon={d => d.properties.windSpeedKnot.value}
+      getPosition={d => d.geometry.coordinates}
+      getSize={d => settings.chart[d.properties.type].iconSize}
+      getColor={d => settings.chart[d.properties.type].color}
+      billboard={false}
+      getAngle={d => 360.0 - d.properties.windDegree.value}
+    />
+  );
 
   return (
     <Fragment>
       {chartTitle}
 
       <ChartTypeSelector
-        types={chartTypes}
+        types={settings.chartTypes}
         handleChangeType={(async (type) => { setChartType(type); })} />
 
       <DeckGL
-        initialViewState={INITIAL_VIEW_STATE}
+        initialViewState={settings.initialViewState}
         controller={true}
       >
 
-        <SolidPolygonLayer id='background'
+        <SolidPolygonLayer id='background-layer'
           data={[[[-180, 90], [0, 90], [180, 90], [180, -90], [0, -90], [-180, -90]]]}
           getPolygon={d => d}
           filled={true}
-          getFillColor={[32, 32, 32]}
+          getFillColor={settings.backgroundLayer.color}
         />
 
         <GeoJsonLayer id="map-layer"
-          data={MAP_URL}
+          data={settings.mapLayer.url}
           filled={true}
-          getFillColor={[64, 64, 64]}
+          getFillColor={settings.mapLayer.color}
         />
 
         < LineLayer id='latlon-line-layer'
           data={latlonline}
           getSourcePosition={d => d.start}
           getTargetPosition={d => d.end}
-          getColor={[127, 127, 127]}
+          getColor={settings.latlonLineLayer.color}
           getWidth={1}
         />
 
@@ -189,7 +168,5 @@ function App() {
     </Fragment>
   );
 }
-
-{/* <MapView id="map" width="100%" controller={true} repeat={true} /> */ }
 
 export default App;
