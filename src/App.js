@@ -82,20 +82,23 @@ function App() {
   })
 
 
-  const characterSet = Object.keys(settings.chart).map(k => settings.chart[k]).filter(x => x.text).map(x => x.text);
   const chartTextLayers = chart && (
-    <TextLayer id={`chart-text-layer`}
+
+    < IconLayer id='chart-center-title-layer'
       data={chart.centerMarks}
+      sizeUnits={'pixels'}
+      iconAtlas={settings.centerTitleLayer.iconAtlas}
+      iconMapping={settings.centerTitleLayer.iconMapping}
+      getIcon={d => d.properties.type}
       getPosition={d => d.geometry.coordinates}
-      getSize={d => settings.chart[d.properties.type].textSize}
-      getText={d => settings.chart[d.properties.type].text}
-      characterSet={characterSet}
-      getTextAnchor={'middle'}
-      getAlignmentBaseline={'center'}
-      getColor={d => settings.chart[d.properties.type].color}
+      getSize={d => settings.chart[d.properties.type].iconSize}
       billboard={false}
       getAngle={d => 180.0}
-      getPixelOffset={[-20, -20]}
+      getPixelOffset={[-20, -60]}
+
+      pickable={true}
+      highlightColor={settings.highlight.color}
+      autoHighlight={true}
     />
   );
 
@@ -105,12 +108,10 @@ function App() {
       sizeUnits={'pixels'}
       iconAtlas={settings.centerMarkLayer.iconAtlas}
       iconMapping={settings.centerMarkLayer.iconMapping}
-      getIcon={d => 'center'}
+      getIcon={d => d.properties.type}
       getPosition={d => d.geometry.coordinates}
       getSize={d => settings.chart[d.properties.type].iconSize}
-      getColor={d => settings.chart[d.properties.type].color}
       billboard={false}
-
       pickable={true}
       highlightColor={settings.highlight.color}
       autoHighlight={true}

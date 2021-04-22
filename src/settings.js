@@ -17,11 +17,11 @@ export const settings = {
         '停滞前線（奇数）': { color: [255, 32, 32], lineWidth: 4, isStroke: true },
         '停滞前線（偶数）': { color: [32, 32, 255], lineWidth: 4, isStroke: true },
         '閉塞前線': { color: [128, 0, 255], lineWidth: 4, isStroke: true },
-        '台風': { text: '台', color: [255, 32, 32], iconSize: 10, textSize: 25 },
-        '高気圧': { text: '高', color: [32, 32, 255], iconSize: 10, textSize: 25 },
-        '低気圧': { text: '低', color: [255, 32, 32], iconSize: 10, textSize: 25 },
-        '熱帯低気圧': { text: '熱', color: [255, 32, 32], iconSize: 10, textSize: 25 },
-        '低圧部': { text: '低', color: [255, 32, 32], iconSize: 10, textSize: 25 },
+        '台風': { text: '台', color: [255, 32, 32], iconSize: 40, textSize: 25 },
+        '高気圧': { text: '高', color: [32, 32, 255], iconSize: 40, textSize: 25 },
+        '低気圧': { text: '低', color: [255, 32, 32], iconSize: 40, textSize: 25 },
+        '熱帯低気圧': { text: '熱', color: [255, 32, 32], iconSize: 40, textSize: 25 },
+        '低圧部': { text: '低', color: [255, 32, 32], iconSize: 40, textSize: 25 },
         '悪天情報（強風）': { color: [127, 127, 127], iconSize: 25 },
         '悪天情報（霧）': { color: [255, 255, 128, 127], isFill: true },
         '悪天情報（海氷）': { color: [192, 192, 255, 127], isFill: true },
@@ -53,6 +53,10 @@ export const settings = {
     centerMarkLayer: {
         iconAtlas: 'chart-center-mark.png',
         iconMapping: 'chart-center-mark.json'
+    },
+    centerTitleLayer: {
+        iconAtlas: 'chart-center-title.png',
+        iconMapping: 'chart-center-title.json'
     },
     highlight: {
         color: [255, 127, 127, 127]
