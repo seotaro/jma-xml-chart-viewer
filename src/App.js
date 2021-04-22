@@ -25,7 +25,7 @@ function App() {
           return JSON.parse(text);
         })
         .then(latest => {
-          return fetch(`${settings.api.xml2chart}/?url=${latest[0].url}`)
+          return fetch(`${settings.api.xml2geojson}/?url=${latest[0].url}`)
         })
         .then(res => {
           return res.text();

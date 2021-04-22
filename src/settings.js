@@ -34,7 +34,7 @@ export const settings = {
     },
     api: {
         jmaxml: 'https://jma-xml-api-mrfbzypr4q-an.a.run.app',
-        xml2chart: 'https://xml2chart-api-mrfbzypr4q-an.a.run.app',
+        xml2geojson: 'https://xml2geojson-api-mrfbzypr4q-an.a.run.app',
     },
     latlonLineLayer: {
         color: [127, 127, 127]
