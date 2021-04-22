@@ -127,7 +127,6 @@ function App() {
       getIcon={d => d.properties.windSpeedKnot.value}
       getPosition={d => d.geometry.coordinates}
       getSize={d => settings.chart[d.properties.type].iconSize}
-      getColor={d => settings.chart[d.properties.type].color}
       billboard={false}
       getAngle={d => 360.0 - d.properties.windDegree.value}
 
@@ -178,9 +177,9 @@ function App() {
           autoHighlight={true}
         />
 
+        {windArrows}
         {chartGeoJsonLayers}
         {centerMarks}
-        {windArrows}
         {chartTextLayers}
 
         <GlobeView id="map" width="100%" controller={true} resolution={1} />

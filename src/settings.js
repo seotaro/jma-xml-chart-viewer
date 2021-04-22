@@ -22,7 +22,7 @@ export const settings = {
         '低気圧': { text: '低', color: [255, 32, 32], iconSize: 40, textSize: 25 },
         '熱帯低気圧': { text: '熱', color: [255, 32, 32], iconSize: 40, textSize: 25 },
         '低圧部': { text: '低', color: [255, 32, 32], iconSize: 40, textSize: 25 },
-        '悪天情報（強風）': { color: [127, 127, 127], iconSize: 25 },
+        '悪天情報（強風）': { iconSize: 40 },
         '悪天情報（霧）': { color: [255, 255, 128, 127], isFill: true },
         '悪天情報（海氷）': { color: [192, 192, 255, 127], isFill: true },
         '悪天情報（船体着氷）': { color: [192, 192, 255, 127], isFill: true },
