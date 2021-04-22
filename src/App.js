@@ -2,7 +2,7 @@ import './App.css';
 
 import React, { useState, useEffect, Fragment } from 'react';
 import DeckGL from '@deck.gl/react';
-import { GeoJsonLayer, SolidPolygonLayer, LineLayer, TextLayer, IconLayer } from '@deck.gl/layers';
+import { GeoJsonLayer, SolidPolygonLayer, IconLayer } from '@deck.gl/layers';
 import { _GlobeView as GlobeView, MapView } from '@deck.gl/core';
 import { getFronts, getIsobars, getStrongWinds, getCenters, getIces, getFogs, latlonlineGeoJson } from './utils'
 import { settings } from './settings'
@@ -81,44 +81,37 @@ function App() {
     />)
   })
 
-
-  const chartTextLayers = chart && (
-
-    < IconLayer id='chart-center-title-layer'
-      data={chart.centerMarks}
+  const chartCenterIconLayers = chart && ([
+    {
+      id: `chart-center-title-layer`,
+      data: chart.centerMarks, angle: 180, offset: [-20, -60],
+      iconAtlas: settings.centerTitleLayer.iconAtlas, iconMapping: settings.centerTitleLayer.iconMapping
+    },
+    {
+      id: `chart-center-mark-layer`,
+      data: chart.centerMarks, angle: 180, offset: [0, 0],
+      iconAtlas: settings.centerMarkLayer.iconAtlas, iconMapping: settings.centerMarkLayer.iconMapping
+    },
+  ]).map(x => {
+    return (< IconLayer id={x.id}
+      data={x.data}
       sizeUnits={'pixels'}
-      iconAtlas={settings.centerTitleLayer.iconAtlas}
-      iconMapping={settings.centerTitleLayer.iconMapping}
+      iconAtlas={x.iconAtlas}
+      iconMapping={x.iconMapping}
       getIcon={d => d.properties.type}
       getPosition={d => d.geometry.coordinates}
       getSize={d => settings.chart[d.properties.type].iconSize}
       billboard={false}
-      getAngle={d => 180.0}
-      getPixelOffset={[-20, -60]}
-
+      getAngle={180.0}
+      getPixelOffset={x.offset}
       pickable={true}
       highlightColor={settings.highlight.color}
       autoHighlight={true}
-    />
-  );
+    />)
+  })
 
-  const centerMarks = chart && (
-    < IconLayer id='chart-center-mark-layer'
-      data={chart.centerMarks}
-      sizeUnits={'pixels'}
-      iconAtlas={settings.centerMarkLayer.iconAtlas}
-      iconMapping={settings.centerMarkLayer.iconMapping}
-      getIcon={d => d.properties.type}
-      getPosition={d => d.geometry.coordinates}
-      getSize={d => settings.chart[d.properties.type].iconSize}
-      billboard={false}
-      pickable={true}
-      highlightColor={settings.highlight.color}
-      autoHighlight={true}
-    />
-  );
 
-  const windArrows = chart && (
+  const chartWindArrowsLayer = chart && (
     < IconLayer id='chart-wind-arrow-layer'
       data={chart.windArrows}
       sizeUnits={'pixels'}
@@ -129,7 +122,6 @@ function App() {
       getSize={d => settings.chart[d.properties.type].iconSize}
       billboard={false}
       getAngle={d => 360.0 - d.properties.windDegree.value}
-
       pickable={true}
       highlightColor={settings.highlight.color}
       autoHighlight={true}
@@ -177,10 +169,9 @@ function App() {
           autoHighlight={true}
         />
 
-        {windArrows}
+        {chartWindArrowsLayer}
         {chartGeoJsonLayers}
-        {centerMarks}
-        {chartTextLayers}
+        {chartCenterIconLayers}
 
         <GlobeView id="map" width="100%" controller={true} resolution={1} />
       </DeckGL>
