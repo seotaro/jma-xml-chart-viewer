@@ -60,6 +60,9 @@ export const settings = {
     },
     highlight: {
         color: [255, 127, 127, 127]
+    },
+    timeline: {
+        count: 10
     }
 
 };

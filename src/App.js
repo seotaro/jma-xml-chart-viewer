@@ -4,53 +4,35 @@ import React, { useState, useEffect, Fragment } from 'react';
 import DeckGL from '@deck.gl/react';
 import { GeoJsonLayer, SolidPolygonLayer, IconLayer } from '@deck.gl/layers';
 import { _GlobeView as GlobeView, MapView } from '@deck.gl/core';
-import { getFronts, getIsobars, getStrongWinds, getCenters, getIces, getFogs, latlonlineGeoJson } from './utils'
+import { latlonlineGeoJson, getChartTimeline, getChart, } from './utils'
 import { settings } from './settings'
 import ChartTitle from './components/ChartTitle'
 import ChartTypeSelector from './components/ChartTypeSelector'
+import ChartTimelineSlider from './components/ChartTimelineSlider'
 
 function App() {
-  const [chart, setChart] = useState(null);
-  const [chartType, setChartType] = useState(Object.keys(settings.chartTypes)[0]);
+  const [chart, setChart] = useState(null); // 天気図オブジェクト
 
+  const [chartTimeline, setTimeline] = useState(null); // タイムライン = 同種天気図の時系列リスト
   useEffect(() => {
     (async () => {
-      const LATEST_URL = `${settings.api.jmaxml}/${chartType}/latest.json`;
+      chartTimeline && setChart(await getChart(chartTimeline, chartIndex, chartType));
+    })();
+  }, [chartTimeline]);
 
-      const chart = await fetch(LATEST_URL)
-        .then(res => {
-          return res.text();
-        })
-        .then(text => {
-          return JSON.parse(text);
-        })
-        .then(latest => {
-          return fetch(`${settings.api.xml2geojson}/?url=${latest[0].url}`)
-        })
-        .then(res => {
-          return res.text();
-        })
-        .then(text => {
-          return JSON.parse(text);
-        })
-        .then(geojson => {
-          // 要素毎にレイヤーに分ける。
-          const title = { ...geojson.properties, type: chartType, code: settings.chartTypes[chartType].code };
-          const isobars = getIsobars(geojson);
-          const fronts = getFronts(geojson);
-          const ices = getIces(geojson);
-          const fogs = getFogs(geojson);
-          const windArrows = getStrongWinds(geojson);
-          const centerMarks = getCenters(geojson);
-          return { fronts: fronts, isobars: isobars, title: title, windArrows: windArrows, centerMarks: centerMarks, ices: ices, fogs: fogs };
-        })
-        .catch((err) => {
-          console.error(`${err}`);
-        });
-
-      setChart(chart);
+  const [chartType, setChartType] = useState(Object.keys(settings.chartTypes)[0]);  // 表示する天気図種類
+  useEffect(() => {
+    (async () => {
+      setTimeline(await getChartTimeline(chartType));
     })();
   }, [chartType]);
+
+  const [chartIndex, setChartIndex] = useState(settings.timeline.count - 1);  // 表示するタイムラインのインデックス
+  useEffect(() => {
+    (async () => {
+      chartTimeline && setChart(await getChart(chartTimeline, chartIndex, chartType));
+    })();
+  }, [chartIndex]);
 
 
   const chartTitle = chart && (<ChartTitle title={chart.title} />);
@@ -110,7 +92,6 @@ function App() {
     />)
   })
 
-
   const chartWindArrowsLayer = chart && (
     < IconLayer id='chart-wind-arrow-layer'
       data={chart.windArrows}
@@ -135,6 +116,11 @@ function App() {
       <ChartTypeSelector
         types={settings.chartTypes}
         handleChangeType={(async (type) => { setChartType(type); })} />
+
+      <ChartTimelineSlider
+        timeline={chartTimeline}
+        index={chartIndex}
+        handleChange={(async (index) => { setChartIndex(index); })} />
 
       <DeckGL
         initialViewState={settings.initialViewState}
