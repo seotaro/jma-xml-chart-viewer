@@ -8,7 +8,22 @@ export async function getChartTimeline(type) {
             return res.text();
         })
         .then(text => {
-            return JSON.parse(text);
+            const reviver = ((key, value) => {
+                return /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/.test(value) ? new Date(value) : value;
+            });
+            return JSON.parse(text, reviver);
+        })
+        .then(list => {
+            // datetime 昇順でソートして返す。
+            return list.sort((a, b) => {
+                const x = a.datetime.getTime();
+                const y = b.datetime.getTime();
+                if (x < y)
+                    return -1;
+                if (y < x)
+                    return 1;
+                return 0;
+            });
         })
         .catch((err) => {
             console.error(`${err}`);
