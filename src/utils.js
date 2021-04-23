@@ -8,6 +8,7 @@ export async function getChartTimeline(type) {
             return res.text();
         })
         .then(text => {
+            // 日時の文字列を Date オブジェクトにする。
             const reviver = ((key, value) => {
                 return /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/.test(value) ? new Date(value) : value;
             });
