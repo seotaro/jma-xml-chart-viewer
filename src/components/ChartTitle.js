@@ -7,8 +7,8 @@ function ChartTitle(props) {
   return (
     <article className='ChartTitle'>
       <h1>{props.title.title} {props.title.code}（{props.title.type}）</h1>
-      <p>basetime : {moment(props.title.basetime).format()}</p>
-      <p>validtime : {moment(props.title.validtime).format()}</p>
+      <p>basetime : {moment.utc(props.title.basetime).format()}</p>
+      <p>validtime : {moment.utc(props.title.validtime).format()}</p>
     </article>
   );
 }
