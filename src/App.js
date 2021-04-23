@@ -7,7 +7,6 @@ import { _GlobeView as GlobeView, MapView } from '@deck.gl/core';
 import { latlonlineGeoJson, getChartTimeline, getChart, } from './utils'
 import { settings } from './settings'
 import ChartTitle from './components/ChartTitle'
-import ChartTypeSelector from './components/ChartTypeSelector'
 import ChartTimelineSlider from './components/ChartTimelineSlider'
 
 function App() {
@@ -113,13 +112,11 @@ function App() {
     <Fragment>
       {chartTitle}
 
-      <ChartTypeSelector
-        types={settings.chartTypes}
-        handleChangeType={(async (type) => { setChartType(type); })} />
-
       <ChartTimelineSlider
+        type={chartType}
         timeline={chartTimeline}
         index={chartIndex}
+        handleChangeType={(async (type) => { setChartType(type); })}
         handleChange={(async (index) => { setChartIndex(index); })} />
 
       <DeckGL

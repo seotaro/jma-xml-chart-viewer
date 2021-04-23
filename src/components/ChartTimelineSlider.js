@@ -1,53 +1,79 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Slider from '@material-ui/core/Slider';
 import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/styles';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import { makeStyles } from "@material-ui/core/styles";
+
 import moment from 'moment';
 import { settings } from '../settings'
 import Box from '@material-ui/core/Box';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: '90%',
+    width: '100%',
+    height: 40,
     position: 'absolute',
     bottom: 10,
     zIndex: 10,
-    height: 30,
+  },
+  box: {
+    paddingRight: 20,
+    paddingLeft: 20,
+    marginRight: 20,
+    marginLeft: 20,
+
+    background: '#ffffff',
+    opacity: 0.75,
   },
 }));
 
 
 function ChartTimelineSlider(props) {
   const classes = useStyles();
+  const [type, setType] = useState(props.type);
 
-  const onChange = (e, newIndex) => {
-    return props.handleChange(newIndex)
-  }
+  const items = Object.keys(settings.chartTypes).map(key => <MenuItem key={key} value={key}>{key}</MenuItem>);
 
   const label = ((index) => {
     return props.timeline ? moment(props.timeline[index].datetime).format() : '';
   })
 
   return (
-    <article className={classes.root}>
-      <Grid container >
-        <Grid item xs={4} >
+    <Box className={classes.root}>
+      <Box className={classes.box}>
+        <Grid container >
+
+          <Grid item xs={2} >
+            <FormControl >
+              <Select
+                value={type}
+                onChange={e => {
+                  setType(e.target.value);
+                  props.handleChangeType(e.target.value);
+                }} >
+                {items}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={10} >
+            <Slider
+              defaultValue={settings.timeline.count - 1}
+              value={props.index}
+              onChange={(e, newIndex) => { props.handleChange(newIndex) }}
+              step={1}
+              marks={true}
+              min={0}
+              max={settings.timeline.count - 1}
+              disabled={props.timeline ? false : true}
+            />
+          </Grid>
         </Grid>
 
-        <Grid item xs={8} >
-          <Slider
-            defaultValue={settings.timeline.count - 1}
-            value={props.index}
-            onChange={onChange}
-            step={1}
-            marks={true}
-            min={0}
-            max={settings.timeline.count - 1}
-            disabled={props.timeline ? false : true}
-          />
-        </Grid>
-      </Grid>
-    </article >
+      </Box>
+    </Box>
   );
 }
 
