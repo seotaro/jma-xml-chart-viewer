@@ -39,7 +39,11 @@ export async function getChart(timeline, index, type) {
             return res.text();
         })
         .then(text => {
-            return JSON.parse(text);
+            // 日時の文字列を Date オブジェクトにする。
+            const reviver = ((key, value) => {
+                return /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/.test(value) ? new Date(value) : value;
+            });
+            return JSON.parse(text, reviver);
         })
         .then(geojson => {
             // 要素毎にレイヤーに分ける。
