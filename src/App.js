@@ -7,7 +7,7 @@ import { _GlobeView as GlobeView, MapView } from '@deck.gl/core';
 import { latlonlineGeoJson, getChartTimeline, getChart, } from './utils'
 import { settings } from './settings'
 import ChartTitle from './components/ChartTitle'
-import ChartTimelineSlider from './components/ChartTimelineSlider'
+import ChartPanel from './components/ChartPanel'
 
 function App() {
   const [chart, setChart] = useState(null); // 天気図オブジェクト
@@ -112,7 +112,7 @@ function App() {
     <Fragment>
       {chartTitle}
 
-      <ChartTimelineSlider
+      <ChartPanel
         type={chartType}
         timeline={chartTimeline}
         index={chartIndex}

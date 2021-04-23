@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-function ChartTimelineSlider(props) {
+function ChartPanel(props) {
   const classes = useStyles();
   const [type, setType] = useState(props.type);
 
@@ -77,4 +77,4 @@ function ChartTimelineSlider(props) {
   );
 }
 
-export default ChartTimelineSlider;
+export default ChartPanel;
