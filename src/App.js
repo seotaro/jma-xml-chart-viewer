@@ -117,7 +117,7 @@ function App() {
         timeline={chartTimeline}
         index={chartIndex}
         handleChangeType={(async (type) => { setChartType(type); })}
-        handleChange={(async (index) => { setChartIndex(index); })} />
+        handleChangeIndex={(async (index) => { setChartIndex(index); })} />
 
       <DeckGL
         initialViewState={settings.initialViewState}

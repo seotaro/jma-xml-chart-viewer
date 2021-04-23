@@ -62,7 +62,7 @@ function ChartPanel(props) {
             <Slider
               defaultValue={settings.timeline.count - 1}
               value={props.index}
-              onChange={(e, newIndex) => { props.handleChange(newIndex) }}
+              onChange={(e, newIndex) => { props.handleChangeIndex(newIndex) }}
               step={1}
               marks={true}
               min={0}
