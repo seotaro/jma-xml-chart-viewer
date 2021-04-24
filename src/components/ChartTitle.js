@@ -33,14 +33,14 @@ function ChartTitle(props) {
       <Box className={classes.root}>
         <Box className={classes.box}>
           <Typography variant="h1" color="primary" >
-            {props.title.title} {props.title.code}（{props.title.type}）
+            {props.title.type} 「{props.title.title}（{props.title.code}）」
           </Typography>
           <Box p={0.5}>
             <Typography variant="body1" color="primary" >
-              basetime : {moment.utc(props.title.basetime).format()}
+              base time : {moment.utc(props.title.basetime).format()}
             </Typography>
             <Typography variant="body1" color="primary"  >
-              validtime : {moment.utc(props.title.validtime).format()}
+              valid time : {moment.utc(props.title.validtime).format()}
             </Typography>
           </Box>
         </Box>
