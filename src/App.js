@@ -37,6 +37,7 @@ function App() {
     { id: `chart-front-layer`, data: chart.fronts },
   ]).map(x => {
     return (<GeoJsonLayer id={x.id}
+      key={x.id}
       data={x.data}
       stroked={d => settings.chart[d.properties.type].isStroke ? settings.chart[d.properties.type].isStroke : false}
       filled={d => settings.chart[d.properties.type].isFill ? settings.chart[d.properties.type].isFill : false}
@@ -69,6 +70,7 @@ function App() {
     },
   ]).map(x => {
     return (< IconLayer id={x.id}
+      key={x.id}
       data={x.data}
       sizeUnits={'pixels'}
       iconAtlas={x.iconAtlas}
