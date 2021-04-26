@@ -11,27 +11,21 @@ import ChartPanel from './components/ChartPanel'
 
 function App() {
   const [chart, setChart] = useState(null); // 天気図オブジェクト
-
   const [chartTimeline, setTimeline] = useState(null); // タイムライン = 同種天気図の時系列リスト
-  useEffect(() => {
-    (async () => {
-      chartTimeline && setChart(await getChart(chartTimeline, chartIndex, chartType));
-    })();
-  }, [chartTimeline]);
-
   const [chartType, setChartType] = useState(Object.keys(settings.chartTypes)[0]);  // 表示する天気図種類
+  const [chartIndex, setChartIndex] = useState(settings.timeline.count - 1);  // 表示するタイムラインのインデックス
+
   useEffect(() => {
     (async () => {
       setTimeline(await getChartTimeline(chartType));
     })();
   }, [chartType]);
 
-  const [chartIndex, setChartIndex] = useState(settings.timeline.count - 1);  // 表示するタイムラインのインデックス
   useEffect(() => {
     (async () => {
       chartTimeline && setChart(await getChart(chartTimeline, chartIndex, chartType));
     })();
-  }, [chartIndex]);
+  }, [chartTimeline, chartIndex, chartType]);
 
 
   const chartTitle = chart && (<ChartTitle title={chart.title} />);
