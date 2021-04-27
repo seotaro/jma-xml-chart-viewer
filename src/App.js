@@ -1,6 +1,11 @@
 import './App.css';
 
 import React, { useState, useEffect, Fragment } from 'react';
+import {
+  BrowserRouter as Router,
+  useParams,
+  useHistory
+} from "react-router-dom";
 import DeckGL from '@deck.gl/react';
 import { GeoJsonLayer, SolidPolygonLayer, IconLayer } from '@deck.gl/layers';
 import { _GlobeView as GlobeView, MapView } from '@deck.gl/core';
@@ -10,6 +15,8 @@ import ChartTitle from './components/ChartTitle'
 import ChartPanel from './components/ChartPanel'
 
 function App() {
+  const history = useHistory();
+
   const [chart, setChart] = useState(null); // 天気図オブジェクト
   const [chartTimeline, setTimeline] = useState(null); // タイムライン = 同種天気図の時系列リスト
   const [chartType, setChartType] = useState(Object.keys(settings.chartTypes)[0]);  // 表示する天気図種類
@@ -17,6 +24,18 @@ function App() {
 
   const [chartTitle, setChartTitle] = useState(null);
   const [chartLayers, setChartLayers] = useState({ geojson: null, centerIcon: null, windArrowsIcon: null });
+
+  const params = useParams();
+  if (params.chartType) {
+    if (chartType !== params.chartType) {
+      setChartType(params.chartType);
+    }
+  } else {
+    const type = Object.keys(settings.chartTypes)[0]
+    if (chartType !== type) {
+      setChartType(type);
+    }
+  }
 
   useEffect(() => {
     (async () => {
@@ -125,7 +144,7 @@ function App() {
         type={chartType}
         timeline={chartTimeline}
         index={chartIndex}
-        handleChangeType={(async (type) => { setChartType(type); })}
+        handleChangeType={(async (type) => { setChartType(type); history.push(type); })}
         handleChangeIndex={(async (index) => { setChartIndex(index); })} />
 
       <DeckGL
