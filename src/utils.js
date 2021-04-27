@@ -54,7 +54,19 @@ export async function getChart(timeline, index, type) {
             const fogs = getFogs(geojson);
             const windArrows = getStrongWinds(geojson);
             const centerMarks = getCenters(geojson);
-            return { fronts: fronts, isobars: isobars, title: title, windArrows: windArrows, centerMarks: centerMarks, ices: ices, fogs: fogs };
+            const centerTexts = getCenterTexts(geojson);
+            const isobarTexts = getIsobarTexts(geojson);
+            return {
+                fronts: fronts,
+                isobars: isobars,
+                title: title,
+                windArrows: windArrows,
+                centerMarks: centerMarks,
+                ices: ices,
+                fogs: fogs,
+                centerTexts: centerTexts,
+                isobarTexts: isobarTexts
+            };
         })
         .catch((err) => {
             console.error(`${err}`);
@@ -185,6 +197,7 @@ function getIsobars(geojson) {
                     }
 
                     isobar.properties.type = '等圧線（補助）';
+                    isobar.geometry = { ...feature.geometry };
                     isobar.geometry.type = 'MultiLineString';
                     isobar.geometry.coordinates = lines.filter((line, i) => (parseInt(i / AUXILIARY_ISOBAR_SPACE) % 2 === 0));
                     ret.push(isobar);
@@ -218,6 +231,34 @@ function getCenters(geojson) {
                                 進行速度 : ${xx.properties.speed.value} ${xx.properties.speed.unit} \n\
                                 進行方向 : ${xx.properties.direction.value} ${xx.properties.direction.unit} \n）`;
             }
+            return xx;
+        });
+}
+
+// 気圧値などテキストを返す。
+function getCenterTexts(geojson) {
+    const targets = ['台風', '低気圧', '高気圧', '熱帯低気圧', '低圧部'];
+    return geojson.features
+        .filter(x => targets.includes(x.properties.type))
+        .map(x => {
+            const xx = { type: x.properties.type };
+            xx.text = `${x.properties.pressure.value}`;
+            xx.coordinates = x.geometry.coordinates;
+            xx.info = `${x.properties.type}（中心気圧 : ${x.properties.pressure.value} ${x.properties.pressure.unit} ）`;
+            return xx;
+        });
+}
+
+// 気圧値などテキストを返す。
+function getIsobarTexts(geojson) {
+    const targets = ['等圧線（主線）'];
+    return geojson.features
+        .filter(x => targets.includes(x.properties.type))
+        .map(x => {
+            const xx = { type: x.properties.type };
+            xx.coordinates = x.geometry.coordinates[Math.floor(x.geometry.coordinates.length / 2)];
+            xx.text = `${x.properties.pressure.value}`;
+            xx.info = `${x.properties.type}（気圧 : ${x.properties.pressure.value} ${x.properties.pressure.unit} ）`;
             return xx;
         });
 }

@@ -7,7 +7,7 @@ import {
   useHistory
 } from "react-router-dom";
 import DeckGL from '@deck.gl/react';
-import { GeoJsonLayer, SolidPolygonLayer, IconLayer } from '@deck.gl/layers';
+import { GeoJsonLayer, SolidPolygonLayer, IconLayer, TextLayer } from '@deck.gl/layers';
 import { _GlobeView as GlobeView, MapView } from '@deck.gl/core';
 import { latlonlineGeoJson, getChartTimeline, getChart, } from './utils'
 import { settings } from './settings'
@@ -90,7 +90,7 @@ function App() {
         layers.centerIcon = ([
           {
             id: `chart-center-title-layer`,
-            data: chart.centerMarks, angle: 180, offset: [-20, -60],
+            data: chart.centerMarks, angle: 180, offset: [-20, -10],
             iconAtlas: settings.centerTitleLayer.iconAtlas, iconMapping: settings.centerTitleLayer.iconMapping
           },
           {
@@ -133,6 +133,34 @@ function App() {
             autoHighlight={true}
           />
         );
+
+        layers.texts = (([
+          {
+            id: `chart-center-text-layer`,
+            data: chart.centerTexts, offset: [0, -10],
+          },
+          {
+            id: `chart-isobar-text-layer`,
+            data: chart.isobarTexts, offset: [0, 10],
+          },
+        ]).map(x => {
+          return (<TextLayer
+            id={x.id}
+            data={x.data}
+            getPosition={d => d.coordinates}
+            getText={d => d.text}
+            getSize={d => settings.chart[d.type].textSize}
+            getColor={d => settings.chart[d.type].textColor}
+            getAngle={180.0}
+            billboard={false}
+            getTextAnchor={'middle'}
+            getAlignmentBaseline={'top'}
+            getPixelOffset={x.offset}
+            pickable={true}
+            highlightColor={settings.highlight.color}
+            autoHighlight={true}
+          />)
+        }));
 
         setChartLayers(layers);
       }
@@ -183,6 +211,8 @@ function App() {
           highlightColor={settings.highlight.color}
           autoHighlight={true}
         />
+
+        {chartLayers.texts}
 
         {chartLayers.windArrowsIcon}
         {chartLayers.geojson}
