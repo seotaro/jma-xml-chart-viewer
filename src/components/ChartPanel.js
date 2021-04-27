@@ -69,7 +69,6 @@ const TimelineSlider = withStyles({
 
 function ChartPanel(props) {
   const classes = useStyles();
-  const [type, setType] = useState(props.type);
 
   const items = Object.keys(settings.chartTypes).map(key => <MenuItem key={key} value={key}>{key}</MenuItem>);
 
@@ -86,9 +85,8 @@ function ChartPanel(props) {
             <Grid item xs={2} >
               <FormControl >
                 <Select className={classes.select}
-                  value={type}
+                  value={props.type}
                   onChange={e => {
-                    setType(e.target.value);
                     props.handleChangeType(e.target.value);
                   }} >
                   {items}
