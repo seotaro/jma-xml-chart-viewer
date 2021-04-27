@@ -45,9 +45,13 @@ function App() {
 
   useEffect(() => {
     (async () => {
-      chartTimeline && setChart(await getChart(chartTimeline, chartIndex, chartType));
+      if (chartTimeline) {
+        setChart(await getChart(chartTimeline, chartIndex, chartType));
+      } else {
+        setChart(null);
+      }
     })();
-  }, [chartTimeline, chartIndex, chartType]);
+  }, [chartTimeline, chartIndex]);
 
   useEffect(() => {
     (async () => {
