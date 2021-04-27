@@ -9,19 +9,19 @@ export const settings = {
         'VZSF61': { name: 'アジア太平洋海上悪天48時間予想図', code: 'FSAS48' },
     },
     chart: {
-        '等圧線': { color: [222, 222, 222], textColor: [179, 179, 179], textSize: 14, lineWidth: 2, isStroke: true },
-        '等圧線（主線）': { color: [222, 222, 222], textColor: [179, 179, 179], textSize: 14, lineWidth: 4, isStroke: true },
-        '等圧線（補助）': { color: [222, 222, 222], textColor: [179, 179, 179], textSize: 14, lineWidth: 2, isStroke: true, },
+        '等圧線': { color: [222, 222, 222], lineWidth: 2, isStroke: true },
+        '等圧線（主線）': { color: [222, 222, 222], lineWidth: 4, isStroke: true },
+        '等圧線（補助）': { color: [222, 222, 222], lineWidth: 2, isStroke: true, },
         '寒冷前線': { color: [32, 32, 255], lineWidth: 4, isStroke: true },
         '温暖前線': { color: [255, 32, 32], lineWidth: 4, isStroke: true },
         '停滞前線（奇数）': { color: [255, 32, 32], lineWidth: 4, isStroke: true },
         '停滞前線（偶数）': { color: [32, 32, 255], lineWidth: 4, isStroke: true },
         '閉塞前線': { color: [128, 0, 255], lineWidth: 4, isStroke: true },
-        '台風': { iconSize: 40, textColor: [179, 179, 179], textSize: 14, textOffset: [0, 20] },
-        '高気圧': { iconSize: 40, textColor: [179, 179, 179], textSize: 14, textOffset: [0, 20] },
-        '低気圧': { iconSize: 40, textColor: [179, 179, 179], textSize: 14, textOffset: [0, 20] },
-        '熱帯低気圧': { iconSize: 40, textColor: [179, 179, 179], textSize: 14, textOffset: [0, 20] },
-        '低圧部': { iconSize: 40, textColor: [179, 179, 179], textSize: 14, textOffset: [0, 20] },
+        '台風': { iconSize: 30, },
+        '高気圧': { iconSize: 30, },
+        '低気圧': { iconSize: 30, },
+        '熱帯低気圧': { iconSize: 30, },
+        '低圧部': { iconSize: 30, },
         '悪天情報（強風）': { iconSize: 40 },
         '悪天情報（霧）': { color: [255, 255, 128, 127], isFill: true },
         '悪天情報（海氷）': { color: [192, 192, 255, 127], isFill: true },
@@ -38,6 +38,10 @@ export const settings = {
     },
     latlonLineLayer: {
         color: [127, 127, 127]
+    },
+    supplementaryInfomation: {
+        color: [179, 179, 179],
+        size: 14
     },
     mapLayer: {
         color: [64, 64, 64],

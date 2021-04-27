@@ -155,8 +155,8 @@ function App() {
             getPosition={d => d.coordinates}
             characterSet={characterSet}
             getText={d => d.text}
-            getSize={d => settings.chart[d.type].textSize}
-            getColor={d => settings.chart[d.type].textColor}
+            getSize={d => settings.supplementaryInfomation.size}
+            getColor={d => settings.supplementaryInfomation.color}
             getAngle={180.0}
             billboard={false}
             getTextAnchor={'middle'}
@@ -177,9 +177,9 @@ function App() {
             iconAtlas={settings.centerDirectionLayer.iconAtlas}
             iconMapping={settings.centerDirectionLayer.iconMapping}
             getIcon={d => d.properties.direction.value ? 'icon' : ''}
-            getColor={d => [179, 179, 179]}
+            getColor={d => settings.supplementaryInfomation.color}
             getPosition={d => d.geometry.coordinates}
-            getSize={d => settings.chart[d.properties.type].iconSize}
+            getSize={d => settings.supplementaryInfomation.size * 3}
             billboard={false}
             getAngle={d => 360.0 - d.properties.direction.value}
             getPixelOffset={d =>
