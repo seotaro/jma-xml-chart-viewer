@@ -54,7 +54,8 @@ export async function getChart(timeline, index, type) {
             const fogs = getFogs(geojson);
             const windArrows = getStrongWinds(geojson);
             const centerMarks = getCenters(geojson);
-            const centerTexts = getCenterTexts(geojson);
+            const centerPressureTexts = getCenterPressureTexts(geojson);
+            const centerSpeedTexts = getCenterSpeedTexts(geojson);
             const isobarTexts = getIsobarTexts(geojson);
             return {
                 fronts: fronts,
@@ -64,7 +65,8 @@ export async function getChart(timeline, index, type) {
                 centerMarks: centerMarks,
                 ices: ices,
                 fogs: fogs,
-                centerTexts: centerTexts,
+                centerPressureTexts: centerPressureTexts,
+                centerSpeedTexts: centerSpeedTexts,
                 isobarTexts: isobarTexts
             };
         })
@@ -236,7 +238,7 @@ function getCenters(geojson) {
 }
 
 // 気圧値などテキストを返す。
-function getCenterTexts(geojson) {
+function getCenterPressureTexts(geojson) {
     const targets = ['台風', '低気圧', '高気圧', '熱帯低気圧', '低圧部'];
     return geojson.features
         .filter(x => targets.includes(x.properties.type))
@@ -245,6 +247,21 @@ function getCenterTexts(geojson) {
             xx.text = `${x.properties.pressure.value}`;
             xx.coordinates = x.geometry.coordinates;
             xx.info = `${x.properties.type}（中心気圧 : ${x.properties.pressure.value} ${x.properties.pressure.unit} ）`;
+            return xx;
+        });
+}
+
+// 中心の進行速度などテキストを返す。
+function getCenterSpeedTexts(geojson) {
+    const targets = ['台風', '低気圧', '高気圧', '熱帯低気圧', '低圧部'];
+    return geojson.features
+        .filter(x => targets.includes(x.properties.type))
+        .map(x => {
+            const xx = { type: x.properties.type };
+            // xx.text = x.properties.speed.value ? `${x.properties.speed.value} ${x.properties.speed.unit}` : 'ほとんど停滞';
+            xx.text = x.properties.speed.value ? `${x.properties.speed.value} ${x.properties.speed.unit}` : '';
+            xx.coordinates = x.geometry.coordinates;
+            xx.info = `${x.properties.type}（進行速度 : ${x.properties.speed.value} ${x.properties.speed.unit} ）`;
             return xx;
         });
 }

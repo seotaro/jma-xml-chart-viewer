@@ -134,10 +134,15 @@ function App() {
           />
         );
 
+        const characterSet = ['ほ', 'と', 'ん', 'ど', '停', '滞', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'k', 'm', '/', ' ', 'h'];
         layers.texts = (([
           {
             id: `chart-center-text-layer`,
-            data: chart.centerTexts, offset: [0, -10],
+            data: chart.centerPressureTexts, offset: [0, -10],
+          },
+          {
+            id: `chart-center-speed-layer`,
+            data: chart.centerSpeedTexts, offset: [-50, 10],
           },
           {
             id: `chart-isobar-text-layer`,
@@ -148,6 +153,7 @@ function App() {
             id={x.id}
             data={x.data}
             getPosition={d => d.coordinates}
+            characterSet={characterSet}
             getText={d => d.text}
             getSize={d => settings.chart[d.type].textSize}
             getColor={d => settings.chart[d.type].textColor}
