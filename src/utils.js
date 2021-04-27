@@ -221,30 +221,39 @@ function getCenters(geojson) {
         .map(x => {
             const xx = { ...x };
             if (xx.properties.type === '台風') {
-                if (xx.properties.speed.value) {
+                if (xx.properties.speed.value && xx.properties.direction.value) {
                     xx.info = `${xx.properties.type}（\n\
                                     T${xx.properties.number} \n名称 : ${xx.properties.nameKana} \n階級 : ${xx.properties.class}
                                     中心気圧 : ${xx.properties.pressure.value} ${xx.properties.pressure.unit} \n\
                                     進行速度 : ${xx.properties.speed.value} ${xx.properties.speed.unit} \n\
                                     進行方向 : ${xx.properties.direction.value} ${xx.properties.direction.unit} \n\
                                     風速 : ${xx.properties.windSpeed.value} ${xx.properties.windSpeed.unit}\n）`;
+                } else if (xx.properties.speed.description && xx.properties.direction.condition) {
+                    xx.info = `${xx.properties.type}（\n\
+                                    T${xx.properties.number} \n名称 : ${xx.properties.nameKana} \n階級 : ${xx.properties.class}
+                                    中心気圧 : ${xx.properties.pressure.value} ${xx.properties.pressure.unit} \n\
+                                    ${xx.properties.speed.description} \n\
+                                    風速 : ${xx.properties.windSpeed.value} ${xx.properties.windSpeed.unit}\n）`;
                 } else {
                     xx.info = `${xx.properties.type}（\n\
                                     T${xx.properties.number} \n名称 : ${xx.properties.nameKana} \n階級 : ${xx.properties.class}
                                     中心気圧 : ${xx.properties.pressure.value} ${xx.properties.pressure.unit} \n\
-                                    ほとんど停滞 \n\
                                     風速 : ${xx.properties.windSpeed.value} ${xx.properties.windSpeed.unit}\n）`;
                 }
             } else {
-                if (xx.properties.speed.value) {
+                if (xx.properties.speed.value && xx.properties.direction.value) {
                     xx.info = `${xx.properties.type}（\n\
                                     中心気圧 : ${xx.properties.pressure.value} ${xx.properties.pressure.unit} \n\
                                     進行速度 : ${xx.properties.speed.value} ${xx.properties.speed.unit} \n\
                                     進行方向 : ${xx.properties.direction.value} ${xx.properties.direction.unit}\n）`;
+                } else if (xx.properties.speed.description && xx.properties.direction.condition) {
+                    xx.info = `${xx.properties.type}（\n\
+                                    中心気圧 : ${xx.properties.pressure.value} ${xx.properties.pressure.unit} \n\
+                                    ${xx.properties.speed.description}\n）`;
                 } else {
                     xx.info = `${xx.properties.type}（\n\
                                     中心気圧 : ${xx.properties.pressure.value} ${xx.properties.pressure.unit} \n\
-                                    ほとんど停滞\n）`;
+                                    \n）`;
                 }
             }
             return xx;
@@ -272,7 +281,6 @@ function getCenterSpeedTexts(geojson) {
         .filter(x => targets.includes(x.properties.type))
         .map(x => {
             const xx = { type: x.properties.type };
-            // xx.text = x.properties.speed.value ? `${x.properties.speed.value} ${x.properties.speed.unit}` : 'ほとんど停滞';
             xx.text = x.properties.speed.value ? `${x.properties.speed.value} ${x.properties.speed.unit}` : '';
             xx.coordinates = x.geometry.coordinates;
             xx.info = `${x.properties.type}（進行速度 : ${x.properties.speed.value} ${x.properties.speed.unit} ）`;
