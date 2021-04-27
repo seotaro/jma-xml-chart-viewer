@@ -7,7 +7,7 @@ import {
   useHistory
 } from "react-router-dom";
 import DeckGL from '@deck.gl/react';
-import { GeoJsonLayer, SolidPolygonLayer, IconLayer } from '@deck.gl/layers';
+import { GeoJsonLayer, SolidPolygonLayer, IconLayer, TextLayer } from '@deck.gl/layers';
 import { _GlobeView as GlobeView, MapView } from '@deck.gl/core';
 import { latlonlineGeoJson, getChartTimeline, getChart, } from './utils'
 import { settings } from './settings'
@@ -90,7 +90,7 @@ function App() {
         layers.centerIcon = ([
           {
             id: `chart-center-title-layer`,
-            data: chart.centerMarks, angle: 180, offset: [-20, -60],
+            data: chart.centerMarks, angle: 180, offset: [-20, -10],
             iconAtlas: settings.centerTitleLayer.iconAtlas, iconMapping: settings.centerTitleLayer.iconMapping
           },
           {
@@ -117,17 +117,69 @@ function App() {
           />)
         });
 
-        layers.windArrowsIcon = (
-          < IconLayer id='chart-wind-arrow-layer'
+        layers.windDirectionIcon = (
+          < IconLayer id='chart-wind-direction-layer'
             data={chart.windArrows}
             sizeUnits={'pixels'}
-            iconAtlas={settings.windArrowLayer.iconAtlas}
-            iconMapping={settings.windArrowLayer.iconMapping}
+            iconAtlas={settings.windDirectionLayer.iconAtlas}
+            iconMapping={settings.windDirectionLayer.iconMapping}
             getIcon={d => d.properties.windSpeedKnot.value}
             getPosition={d => d.geometry.coordinates}
             getSize={d => settings.chart[d.properties.type].iconSize}
             billboard={false}
             getAngle={d => 360.0 - d.properties.windDegree.value}
+            pickable={true}
+            highlightColor={settings.highlight.color}
+            autoHighlight={true}
+          />
+        );
+
+        layers.texts = (([
+          {
+            id: `chart-center-text-layer`,
+            data: chart.centerTexts, offset: [0, -10],
+          },
+          {
+            id: `chart-isobar-text-layer`,
+            data: chart.isobarTexts, offset: [0, 10],
+          },
+        ]).map(x => {
+          return (<TextLayer
+            id={x.id}
+            data={x.data}
+            getPosition={d => d.coordinates}
+            getText={d => d.text}
+            getSize={d => settings.chart[d.type].textSize}
+            getColor={d => settings.chart[d.type].textColor}
+            getAngle={180.0}
+            billboard={false}
+            getTextAnchor={'middle'}
+            getAlignmentBaseline={'top'}
+            getPixelOffset={x.offset}
+            fontFamily={'Helvetica'}
+            pickable={true}
+            highlightColor={settings.highlight.color}
+            autoHighlight={true}
+          />)
+        }));
+
+        const distance = 20.0;
+        layers.centerDirectionIcon = (
+          < IconLayer id='chart-center-direction-layer'
+            data={chart.centerMarks}
+            sizeUnits={'pixels'}
+            iconAtlas={settings.centerDirectionLayer.iconAtlas}
+            iconMapping={settings.centerDirectionLayer.iconMapping}
+            getIcon={d => d.properties.direction.value ? 'icon' : ''}
+            getColor={d => [179, 179, 179]}
+            getPosition={d => d.geometry.coordinates}
+            getSize={d => settings.chart[d.properties.type].iconSize}
+            billboard={false}
+            getAngle={d => 360.0 - d.properties.direction.value}
+            getPixelOffset={d =>
+              [distance * - 1.0 * Math.sin(Math.PI * d.properties.direction.value / 180.0),
+              distance * Math.cos(Math.PI * d.properties.direction.value / 180.0)]
+            }
             pickable={true}
             highlightColor={settings.highlight.color}
             autoHighlight={true}
@@ -185,7 +237,9 @@ function App() {
         />
 
         {chartLayers.windArrowsIcon}
+        {chartLayers.centerDirectionIcon}
         {chartLayers.geojson}
+        {chartLayers.texts}
         {chartLayers.centerIcon}
 
         <GlobeView id="map" width="100%" controller={true} resolution={1} />
