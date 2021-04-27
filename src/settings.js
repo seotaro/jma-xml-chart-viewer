@@ -46,7 +46,7 @@ export const settings = {
     backgroundLayer: {
         color: [32, 32, 32]
     },
-    windArrowLayer: {
+    windDirectionLayer: {
         iconAtlas: 'chart-wind-arrow.png',
         iconMapping: 'chart-wind-arrow.json'
     },
@@ -57,6 +57,10 @@ export const settings = {
     centerTitleLayer: {
         iconAtlas: 'chart-center-title.png',
         iconMapping: 'chart-center-title.json'
+    },
+    centerDirectionLayer: {
+        iconAtlas: 'chart-direction-arrow.png',
+        iconMapping: 'chart-direction-arrow.json'
     },
     highlight: {
         color: [255, 127, 127, 127]

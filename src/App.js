@@ -117,12 +117,12 @@ function App() {
           />)
         });
 
-        layers.windArrowsIcon = (
-          < IconLayer id='chart-wind-arrow-layer'
+        layers.windDirectionIcon = (
+          < IconLayer id='chart-wind-direction-layer'
             data={chart.windArrows}
             sizeUnits={'pixels'}
-            iconAtlas={settings.windArrowLayer.iconAtlas}
-            iconMapping={settings.windArrowLayer.iconMapping}
+            iconAtlas={settings.windDirectionLayer.iconAtlas}
+            iconMapping={settings.windDirectionLayer.iconMapping}
             getIcon={d => d.properties.windSpeedKnot.value}
             getPosition={d => d.geometry.coordinates}
             getSize={d => settings.chart[d.properties.type].iconSize}
@@ -161,6 +161,28 @@ function App() {
             autoHighlight={true}
           />)
         }));
+
+        const distance = 20.0;
+        layers.centerDirectionIcon = (
+          < IconLayer id='chart-center-direction-layer'
+            data={chart.centerMarks}
+            sizeUnits={'pixels'}
+            iconAtlas={settings.centerDirectionLayer.iconAtlas}
+            iconMapping={settings.centerDirectionLayer.iconMapping}
+            getIcon={d => d.properties.direction.value ? 'icon' : ''}
+            getPosition={d => d.geometry.coordinates}
+            getSize={d => settings.chart[d.properties.type].iconSize}
+            billboard={false}
+            getAngle={d => 360.0 - d.properties.direction.value}
+            getPixelOffset={d =>
+              [distance * - 1.0 * Math.sin(Math.PI * d.properties.direction.value / 180.0),
+              distance * Math.cos(Math.PI * d.properties.direction.value / 180.0)]
+            }
+            pickable={true}
+            highlightColor={settings.highlight.color}
+            autoHighlight={true}
+          />
+        );
 
         setChartLayers(layers);
       }
@@ -212,10 +234,10 @@ function App() {
           autoHighlight={true}
         />
 
-        {chartLayers.texts}
-
         {chartLayers.windArrowsIcon}
+        {chartLayers.centerDirectionIcon}
         {chartLayers.geojson}
+        {chartLayers.texts}
         {chartLayers.centerIcon}
 
         <GlobeView id="map" width="100%" controller={true} resolution={1} />
