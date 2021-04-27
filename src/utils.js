@@ -221,17 +221,31 @@ function getCenters(geojson) {
         .map(x => {
             const xx = { ...x };
             if (xx.properties.type === '台風') {
-                xx.info = `${xx.properties.type}（\n\
-                                T${xx.properties.number} \n名称 : ${xx.properties.nameKana} \n階級 : ${xx.properties.class}
-                                中心気圧 : ${xx.properties.pressure.value} ${xx.properties.pressure.unit} \n\
-                                進行速度 : ${xx.properties.speed.value} ${xx.properties.speed.unit} \n\
-                                進行方向 : ${xx.properties.direction.value} ${xx.properties.direction.unit} \n\
-                                風速 : ${xx.properties.windSpeed.value} ${xx.properties.windSpeed.unit}\n）`;
+                if (xx.properties.speed.value) {
+                    xx.info = `${xx.properties.type}（\n\
+                                    T${xx.properties.number} \n名称 : ${xx.properties.nameKana} \n階級 : ${xx.properties.class}
+                                    中心気圧 : ${xx.properties.pressure.value} ${xx.properties.pressure.unit} \n\
+                                    進行速度 : ${xx.properties.speed.value} ${xx.properties.speed.unit} \n\
+                                    進行方向 : ${xx.properties.direction.value} ${xx.properties.direction.unit} \n\
+                                    風速 : ${xx.properties.windSpeed.value} ${xx.properties.windSpeed.unit}\n）`;
+                } else {
+                    xx.info = `${xx.properties.type}（\n\
+                                    T${xx.properties.number} \n名称 : ${xx.properties.nameKana} \n階級 : ${xx.properties.class}
+                                    中心気圧 : ${xx.properties.pressure.value} ${xx.properties.pressure.unit} \n\
+                                    ほとんど停滞 \n\
+                                    風速 : ${xx.properties.windSpeed.value} ${xx.properties.windSpeed.unit}\n）`;
+                }
             } else {
-                xx.info = `${xx.properties.type}（\n\
-                                中心気圧 : ${xx.properties.pressure.value} ${xx.properties.pressure.unit} \n\
-                                進行速度 : ${xx.properties.speed.value} ${xx.properties.speed.unit} \n\
-                                進行方向 : ${xx.properties.direction.value} ${xx.properties.direction.unit} \n）`;
+                if (xx.properties.speed.value) {
+                    xx.info = `${xx.properties.type}（\n\
+                                    中心気圧 : ${xx.properties.pressure.value} ${xx.properties.pressure.unit} \n\
+                                    進行速度 : ${xx.properties.speed.value} ${xx.properties.speed.unit} \n\
+                                    進行方向 : ${xx.properties.direction.value} ${xx.properties.direction.unit}\n）`;
+                } else {
+                    xx.info = `${xx.properties.type}（\n\
+                                    中心気圧 : ${xx.properties.pressure.value} ${xx.properties.pressure.unit} \n\
+                                    ほとんど停滞\n）`;
+                }
             }
             return xx;
         });
