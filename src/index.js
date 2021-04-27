@@ -11,7 +11,7 @@ import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>
-    <Router basename={`"${process.env.ROUTE_BASENAME}"`}>
+    <Router basename={`${process.env.REACT_APP_ROUTE_BASENAME}`}>
       <Switch>
         <Route exact path="/" component={App} />
         <Route path="/:chartType" component={App} />
