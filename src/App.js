@@ -156,6 +156,7 @@ function App() {
             getTextAnchor={'middle'}
             getAlignmentBaseline={'top'}
             getPixelOffset={x.offset}
+            fontFamily={'Helvetica'}
             pickable={true}
             highlightColor={settings.highlight.color}
             autoHighlight={true}
@@ -170,6 +171,7 @@ function App() {
             iconAtlas={settings.centerDirectionLayer.iconAtlas}
             iconMapping={settings.centerDirectionLayer.iconMapping}
             getIcon={d => d.properties.direction.value ? 'icon' : ''}
+            getColor={d => [179, 179, 179]}
             getPosition={d => d.geometry.coordinates}
             getSize={d => settings.chart[d.properties.type].iconSize}
             billboard={false}
