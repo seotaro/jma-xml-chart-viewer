@@ -9,9 +9,12 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+
+const basename = process.env.REACT_APP_ROUTE_BASENAME || '';
+
 ReactDOM.render(
   <React.StrictMode>
-    <Router basename={`${process.env.REACT_APP_ROUTE_BASENAME}`}>
+    <Router basename={basename}>
       <Switch>
         <Route exact path="/" component={App} />
         <Route path="/:chartType" component={App} />
