@@ -250,6 +250,13 @@ function App() {
 
         <GlobeView id="map" width="100%" controller={true} resolution={1} />
       </DeckGL>
+      <div className="attribution">
+        <a href="http://xml.kishou.go.jp/index.html"
+          target="_blank"
+          rel="noopener noreferrer" >
+          気象庁防災情報XML
+        </a>
+      </div>
     </Fragment >
   );
 }

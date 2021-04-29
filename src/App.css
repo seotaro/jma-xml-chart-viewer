@@ -36,3 +36,18 @@
     transform: rotate(360deg);
   }
 }
+
+.attribution {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: lightgray;
+  color: black;
+  font-size: 12px;
+  line-height: 12px;
+  padding: 5px;
+  z-index: 10;
+}
+
+.attribution a:link { color: black; }
+.attribution a:visited { color: black; }
