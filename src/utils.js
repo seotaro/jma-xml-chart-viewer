@@ -2,7 +2,7 @@ import { settings } from './settings'
 
 // 天気図のリストを取得する。
 export async function getChartTimeline(type) {
-    const url = `${settings.api.jmaxml}/${type}?count=${settings.timeline.count}`;
+    const url = `${settings.api.jmaxml}/${type}?limit=${settings.timeline.count}`;
     return fetch(url)
         .then(res => {
             return res.text();
